@@ -2,6 +2,6 @@ package models
 
 import play.api.libs.json.{ Format, Json }
 
-trait StatsPlatformSpecific {
+private[models] trait StatsPlatformSpecific {
   implicit val format: Format[Stats] = Json.format
 }

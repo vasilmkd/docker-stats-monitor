@@ -14,6 +14,10 @@ body {
     margin-bottom: 0;
 }
 
+hr {
+    margin-bottom: 16px;
+}
+
 .mdc-layout-grid__inner {
     margin-bottom: 16px;
 }

@@ -1,6 +1,6 @@
 ThisBuild / name := "docker-stats-monitor"
 ThisBuild / organization := "mk.ukim.finki.inssok.stats.monitor"
-ThisBuild / version := "0.0.1-SNAPSHOT"
+ThisBuild / version := "0.0.1"
 ThisBuild / scalaVersion := "2.13.1"
 
 lazy val root = (project in file("."))

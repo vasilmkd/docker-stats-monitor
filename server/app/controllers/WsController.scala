@@ -15,19 +15,18 @@ import models._
 @Singleton
 class WsController @Inject() (override val controllerComponents: ControllerComponents) extends BaseController {
 
-  private val builder = new ProcessBuilder()
+  private val statsBuilder = new ProcessBuilder()
     .command(
       "docker",
       "stats",
       "--format",
-      "table {{.ID}},{{.Name}},{{.CPUPerc}},{{.MemPerc}}",
-      "--no-stream",
-      "--no-trunc"
+      "table {{.ID}},{{.Name}},{{.CPUPerc}},{{.MemUsage}},{{.MemPerc}},{{.NetIO}},{{.BlockIO}},{{.PIDs}}",
+      "--no-stream"
     )
 
   private val source: Source[Stats, NotUsed] =
     StreamConverters
-      .fromInputStream(() => builder.start().getInputStream())
+      .fromInputStream(() => statsBuilder.start().getInputStream())
       .via(Framing.delimiter(ByteString("\n"), 8192, true))
       .map(_.utf8String)
       .drop(1)
