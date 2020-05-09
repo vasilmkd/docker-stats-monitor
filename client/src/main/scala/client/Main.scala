@@ -12,7 +12,7 @@ object Main {
   private val state: mutable.Map[String, ContainerState] = mutable.Map.empty
 
   def main(args: Array[String]): Unit = {
-    val socket = new WebSocket("ws://localhost:9000/ws")
+    val socket = new WebSocket("ws://localhost:8080/ws")
 
     val charts = document.getElementById("charts")
 
