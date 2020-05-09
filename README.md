@@ -7,5 +7,5 @@ The `build.sbt` build description contains useful task definition and sequencing
 Run with:
 
 ```
-docker run -d --name monitor -p "9000:9000" -v /var/run/docker.sock:/var/run/docker.sock vasilvasilev97/docker-stats-monitor
+docker run -d --name monitor -p "8080:8080" -v /var/run/docker.sock:/var/run/docker.sock vasilvasilev97/docker-stats-monitor
 ```
