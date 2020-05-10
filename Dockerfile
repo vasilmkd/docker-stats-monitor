@@ -9,17 +9,14 @@ RUN curl -L -o musl.tar.gz \
     tar -xvzf musl.tar.gz
 RUN sbt clean compile fullOptJS
 RUN sbt server/graalvm-native-image:packageBin
-
-FROM alpine
-RUN apk add --no-cache wget
-RUN wget http://get.docker.com/builds/Linux/x86_64/docker-latest.tgz
-RUN apk del wget
+RUN rm static/js/client.js.map
+RUN curl -L -o docker-latest.tgz http://get.docker.com/builds/Linux/x86_64/docker-latest.tgz
 RUN tar -xvzf docker-latest.tgz
-RUN mv docker/docker /usr/bin
-RUN rm -rf docker docker-latest.tgz
-COPY --from=builder /build/server/target/graalvm-native-image/server /docker-stats-monitor/server
-COPY --from=builder /build/static /docker-stats-monitor/static
-RUN rm /docker-stats-monitor/static/js/client.js.map
-WORKDIR /docker-stats-monitor
+
+FROM scratch
+COPY --from=builder /build/server/target/graalvm-native-image/server /server
+COPY --from=builder /build/static /static
+COPY --from=builder /build/docker/docker /docker
+ENV PATH "/"
 EXPOSE 8080
-ENTRYPOINT [ "./server" ]
+ENTRYPOINT [ "/server" ]
