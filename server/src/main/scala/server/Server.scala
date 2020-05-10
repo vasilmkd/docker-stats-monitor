@@ -2,11 +2,11 @@ package server
 
 import java.io.File
 
-import cats.effect.{ Blocker, ConcurrentEffect, ContextShift, Sync, Timer }
+import cats.effect.{ Blocker, ConcurrentEffect, ContextShift, Timer }
 import fs2.{ Pipe, Stream }
 import io.circe.syntax._
 import io.circe.generic.auto._
-import org.http4s.{ HttpApp, HttpRoutes, StaticFile, Status }
+import org.http4s.{ HttpApp, HttpRoutes, StaticFile }
 import org.http4s.dsl.Http4sDsl
 import org.http4s.implicits._
 import org.http4s.server.Router

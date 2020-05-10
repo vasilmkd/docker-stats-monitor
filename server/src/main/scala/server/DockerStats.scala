@@ -31,7 +31,7 @@ object DockerStats {
       .fold(Stats(Set.empty))((s, cd) => Stats(s.data + cd))
 
   private def processInputStream[F[_]: Sync](pb: ProcessBuilder): F[InputStream] =
-    Sync[F].delay(statsBuilder.start().getInputStream())
+    Sync[F].delay(pb.start().getInputStream())
 
   private val statsBuilder = new ProcessBuilder()
     .command(

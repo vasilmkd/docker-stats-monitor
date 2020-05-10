@@ -11,5 +11,6 @@ class Data(initial: Double) extends js.Object {
     labels.push(counter)
     counter += 1
     series(0).push(v)
+    ()
   }
 }
