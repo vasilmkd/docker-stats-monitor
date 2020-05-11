@@ -7,10 +7,13 @@ jobs:
     name: Docker build and push
     runs-on: ubuntu-latest
     steps:
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v1.1.0
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: vasilvasilev97/docker-stats-monitor
-          tags: latest
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v1.1.0
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        repository: vasilvasilev97/docker-stats-monitor
+        tags: latest
