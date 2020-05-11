@@ -2,6 +2,8 @@ package client
 
 import scala.collection.mutable
 import scala.scalajs.js
+
+import cats.implicits._
 import org.scalajs.dom._
 
 import client.chartist._, Chartist._
@@ -18,7 +20,7 @@ object Main {
 
     socket.onmessage = (e: MessageEvent) => {
       val json  = js.JSON.parse(e.data.toString)
-      val stats = Stats(json)
+      val stats = Stats.parse[Either[Throwable, *]](json).toOption.get
       println(stats)
 
       val keySet   = state.keySet
