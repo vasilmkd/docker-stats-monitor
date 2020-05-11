@@ -2,7 +2,7 @@ import NativePackagerHelper._
 
 ThisBuild / name := "docker-stats-monitor"
 ThisBuild / organization := "mk.ukim.finki.inssok.stats.monitor"
-ThisBuild / version := "0.0.2"
+ThisBuild / version := "0.0.3"
 ThisBuild / scalaVersion := "2.13.2"
 
 val compilerOptions = Seq(
@@ -77,9 +77,9 @@ lazy val server = (project in file("server"))
     scalacOptions ++= compilerOptions,
     addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full),
     libraryDependencies ++= Seq(
-      "org.http4s" %% "http4s-blaze-server" % "0.21.3",
-      "org.http4s" %% "http4s-dsl"          % "0.21.3",
-      "org.http4s" %% "http4s-circe"        % "0.21.3",
+      "org.http4s" %% "http4s-blaze-server" % "0.21.4",
+      "org.http4s" %% "http4s-dsl"          % "0.21.4",
+      "org.http4s" %% "http4s-circe"        % "0.21.4",
       "io.circe"   %% "circe-generic"       % "0.13.0",
       "org.slf4j"  % "slf4j-simple"         % "1.7.30"
     ),
