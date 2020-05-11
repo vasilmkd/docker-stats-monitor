@@ -1,6 +1,9 @@
 name: Build and push Docker image
 
-on: [push]
+on:
+  push:
+    branches:
+    - master
 
 jobs:
   build:
@@ -9,7 +12,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
     - name: Build and push Docker image
       uses: docker/build-push-action@v1.1.0
       with:
