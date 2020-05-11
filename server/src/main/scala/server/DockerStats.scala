@@ -4,6 +4,7 @@ import java.io.InputStream
 
 import scala.concurrent.duration._
 
+import cats.Functor
 import cats.effect.{ Blocker, ContextShift, Sync, Timer }
 import fs2.{ text, Stream }
 import fs2.io._
@@ -15,7 +16,7 @@ object DockerStats {
   def stream[F[_]: Sync: ContextShift: Timer](blocker: Blocker): Stream[F, Stats] =
     ticker(statsStream(blocker))
 
-  private def ticker[F[_]: Sync: Timer, A](stream: Stream[F, A]): Stream[F, A] =
+  private def ticker[F[_]: Functor: Timer, A](stream: Stream[F, A]): Stream[F, A] =
     Stream
       .awakeEvery[F](5.seconds)
       .map(_ => stream)
