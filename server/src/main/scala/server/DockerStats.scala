@@ -27,7 +27,7 @@ object DockerStats {
       .through(text.lines)
       .filter(_.nonEmpty)
       .drop(1)
-      .map(ContainerData(_))
+      .evalMap(ContainerData.parse(_))
       .fold(Stats(Set.empty))((s, cd) => Stats(s.data + cd))
 
   private def processInputStream[F[_]: Sync](pb: ProcessBuilder): F[InputStream] =

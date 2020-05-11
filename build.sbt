@@ -57,13 +57,25 @@ lazy val root = (project in file("."))
   )
 
 lazy val shared = crossProject(JVMPlatform, JSPlatform)
-  .settings(scalacOptions ++= compilerOptions)
+  .settings(
+    scalacOptions ++= compilerOptions,
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full),
+    libraryDependencies ++= Seq(
+      "org.typelevel" %%% "cats-core" % "2.1.1",
+      "org.scalameta" %%% "munit"     % "0.7.6" % Test
+    ),
+    testFrameworks += new TestFramework("munit.Framework")
+  )
+  .jsSettings(
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
+  )
   .in(file("shared"))
 
 lazy val server = (project in file("server"))
   .enablePlugins(GraalVMNativeImagePlugin)
   .settings(
     scalacOptions ++= compilerOptions,
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full),
     libraryDependencies ++= Seq(
       "org.http4s" %% "http4s-blaze-server" % "0.21.3",
       "org.http4s" %% "http4s-dsl"          % "0.21.3",
@@ -99,6 +111,7 @@ lazy val client = (project in file("client"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     scalacOptions ++= compilerOptions.filterNot(_ == "-Ywarn-unused:params"),
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full),
     cleanFiles ++= Seq(
       (ThisBuild / baseDirectory).value / "static" / "js" / "client.js",
       (ThisBuild / baseDirectory).value / "static" / "js" / "client.js.map"
