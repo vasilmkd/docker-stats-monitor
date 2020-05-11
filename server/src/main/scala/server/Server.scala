@@ -2,6 +2,8 @@ package server
 
 import java.io.File
 
+import scala.concurrent.ExecutionContext
+
 import cats.effect.{ Blocker, ConcurrentEffect, ContextShift, Timer }
 import fs2.{ Pipe, Stream }
 import io.circe.syntax._
@@ -16,10 +18,10 @@ import org.http4s.server.websocket.WebSocketBuilder
 import org.http4s.websocket.WebSocketFrame
 import org.http4s.websocket.WebSocketFrame._
 
-class Server[F[_]: ConcurrentEffect: ContextShift: Timer](blocker: Blocker) extends Http4sDsl[F] {
+class Server[F[_]: ConcurrentEffect: ContextShift: Timer](blocker: Blocker, ec: ExecutionContext) extends Http4sDsl[F] {
 
   val serve: F[Unit] =
-    BlazeServerBuilder[F]
+    BlazeServerBuilder[F](ec)
       .bindHttp(8080, "0.0.0.0")
       .withHttpApp(app)
       .serve
