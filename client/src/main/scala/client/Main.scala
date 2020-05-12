@@ -1,9 +1,9 @@
 package client
 
 import scala.collection.mutable
-import scala.scalajs.js
 
-import cats.implicits._
+import io.circe.generic.auto._
+import io.circe.parser._
 import org.scalajs.dom._
 
 import client.chartist._, Chartist._
@@ -19,8 +19,7 @@ object Main {
     val charts = document.getElementById("charts")
 
     socket.onmessage = (e: MessageEvent) => {
-      val json  = js.JSON.parse(e.data.toString)
-      val stats = Stats.parse[Either[Throwable, *]](json).toOption.get
+      val stats = decode[Stats](e.data.toString).toOption.get
       println(stats)
 
       val keySet   = state.keySet

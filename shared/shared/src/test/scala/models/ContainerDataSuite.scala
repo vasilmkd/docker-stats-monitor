@@ -17,10 +17,10 @@ class ContainerDataSuite extends FunSuite {
       "0B / 0B",
       1
     )
-    assertEquals(ContainerData.parse[Either[Throwable, *]](line), Right(result))
+    assertEquals(ContainerData.parseCSV[Either[Throwable, *]](line), Right(result))
   }
 
   test("fail") {
-    assert(ContainerData.parse[Either[Throwable, *]]("").isLeft)
+    assert(ContainerData.parseCSV[Either[Throwable, *]]("").isLeft)
   }
 }
