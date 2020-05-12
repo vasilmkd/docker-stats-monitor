@@ -4,8 +4,11 @@ ThisBuild / version := "0.0.3"
 ThisBuild / scalaVersion := "2.13.2"
 
 val http4sVersion        = "0.21.4"
+val catsVersion          = "2.1.1"
+val circeVersion         = "0.13.0"
 val slf4jVersion         = "1.7.30"
 val kindProjectorVersion = "0.11.0"
+val munitVersion         = "0.7.6"
 
 val compilerOptions = Seq(
   "-deprecation", // Emit warning and location for usages of deprecated APIs.
@@ -63,8 +66,8 @@ lazy val shared = crossProject(JVMPlatform, JSPlatform)
     scalacOptions ++= compilerOptions,
     addCompilerPlugin("org.typelevel" %% "kind-projector" % kindProjectorVersion cross CrossVersion.full),
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-core" % "2.1.1",
-      "org.scalameta" %%% "munit"     % "0.7.6" % Test
+      "org.typelevel" %%% "cats-core" % catsVersion,
+      "org.scalameta" %%% "munit"     % munitVersion % Test
     ),
     testFrameworks += new TestFramework("munit.Framework")
   )
@@ -82,7 +85,7 @@ lazy val server = (project in file("server"))
       "org.http4s" %% "http4s-blaze-server" % http4sVersion,
       "org.http4s" %% "http4s-dsl"          % http4sVersion,
       "org.http4s" %% "http4s-circe"        % http4sVersion,
-      "io.circe"   %% "circe-generic"       % "0.13.0",
+      "io.circe"   %% "circe-generic"       % circeVersion,
       "org.slf4j"  % "slf4j-simple"         % slf4jVersion
     ),
     graalVMNativeImageOptions ++= Seq(
@@ -120,7 +123,11 @@ lazy val client = (project in file("client"))
     ),
     (Compile / fastOptJS / artifactPath) := (ThisBuild / baseDirectory).value / "static" / "js" / "client.js",
     (Compile / fullOptJS / artifactPath) := (ThisBuild / baseDirectory).value / "static" / "js" / "client.js",
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "1.0.0",
+    libraryDependencies ++= Seq(
+      "org.scala-js" %%% "scalajs-dom"   % "1.0.0",
+      "io.circe"     %%% "circe-generic" % circeVersion,
+      "io.circe"     %%% "circe-parser"  % circeVersion
+    ),
     scalaJSUseMainModuleInitializer := true
   )
   .dependsOn(shared.js)
