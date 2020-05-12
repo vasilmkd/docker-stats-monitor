@@ -1,9 +1,11 @@
-import NativePackagerHelper._
-
 ThisBuild / name := "docker-stats-monitor"
 ThisBuild / organization := "mk.ukim.finki.inssok.stats.monitor"
 ThisBuild / version := "0.0.3"
 ThisBuild / scalaVersion := "2.13.2"
+
+val http4sVersion        = "0.21.4"
+val slf4jVersion         = "1.7.30"
+val kindProjectorVersion = "0.11.0"
 
 val compilerOptions = Seq(
   "-deprecation", // Emit warning and location for usages of deprecated APIs.
@@ -59,7 +61,7 @@ lazy val root = (project in file("."))
 lazy val shared = crossProject(JVMPlatform, JSPlatform)
   .settings(
     scalacOptions ++= compilerOptions,
-    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full),
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % kindProjectorVersion cross CrossVersion.full),
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-core" % "2.1.1",
       "org.scalameta" %%% "munit"     % "0.7.6" % Test
@@ -75,13 +77,13 @@ lazy val server = (project in file("server"))
   .enablePlugins(GraalVMNativeImagePlugin)
   .settings(
     scalacOptions ++= compilerOptions,
-    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full),
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % kindProjectorVersion cross CrossVersion.full),
     libraryDependencies ++= Seq(
-      "org.http4s" %% "http4s-blaze-server" % "0.21.4",
-      "org.http4s" %% "http4s-dsl"          % "0.21.4",
-      "org.http4s" %% "http4s-circe"        % "0.21.4",
+      "org.http4s" %% "http4s-blaze-server" % http4sVersion,
+      "org.http4s" %% "http4s-dsl"          % http4sVersion,
+      "org.http4s" %% "http4s-circe"        % http4sVersion,
       "io.circe"   %% "circe-generic"       % "0.13.0",
-      "org.slf4j"  % "slf4j-simple"         % "1.7.30"
+      "org.slf4j"  % "slf4j-simple"         % slf4jVersion
     ),
     graalVMNativeImageOptions ++= Seq(
       "--verbose",
@@ -111,7 +113,7 @@ lazy val client = (project in file("client"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     scalacOptions ++= compilerOptions.filterNot(_ == "-Ywarn-unused:params"),
-    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full),
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % kindProjectorVersion cross CrossVersion.full),
     cleanFiles ++= Seq(
       (ThisBuild / baseDirectory).value / "static" / "js" / "client.js",
       (ThisBuild / baseDirectory).value / "static" / "js" / "client.js.map"
