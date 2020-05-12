@@ -17,8 +17,7 @@ object DockerStats {
     ticker(statsStream(blocker))
 
   private def ticker[F[_]: Functor: Timer, A](stream: Stream[F, A]): Stream[F, A] =
-    Stream
-      .awakeEvery[F](5.seconds)
+    (Stream.emit(Duration.Zero) ++ Stream.awakeEvery[F](5.seconds))
       .map(_ => stream)
       .flatten
 
