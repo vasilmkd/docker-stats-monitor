@@ -129,8 +129,11 @@ lazy val client = (project in file("client"))
       "org.typelevel" %%% "cats-effect"   % "2.1.3",
       "co.fs2"        %%% "fs2-core"      % fs2Version,
       "io.circe"      %%% "circe-generic" % circeVersion,
-      "io.circe"      %%% "circe-parser"  % circeVersion
+      "io.circe"      %%% "circe-parser"  % circeVersion,
+      "org.scalameta" %%% "munit"         % munitVersion % Test
     ),
-    scalaJSUseMainModuleInitializer := true
+    scalaJSUseMainModuleInitializer := true,
+    testFrameworks += new TestFramework("munit.Framework"),
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
   )
   .dependsOn(shared.js)
