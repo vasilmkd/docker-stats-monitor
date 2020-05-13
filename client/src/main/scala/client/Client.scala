@@ -16,7 +16,7 @@ import models._
 
 class Client[F[_]: ConcurrentEffect] {
 
-  type ClientState = Map[String, ContainerState]
+  private type ClientState = Map[String, ContainerState]
 
   val run: F[Unit] =
     Stream
@@ -34,7 +34,7 @@ class Client[F[_]: ConcurrentEffect] {
       .compile
       .drain
 
-  def socket(queue: Queue[F, MessageEvent]): F[WebSocket] =
+  private def socket(queue: Queue[F, MessageEvent]): F[WebSocket] =
     for {
       ws <- Sync[F].delay(new WebSocket("ws://localhost:8080/ws"))
       _ <- Sync[F].delay {
@@ -42,18 +42,18 @@ class Client[F[_]: ConcurrentEffect] {
           }
     } yield ws
 
-  val charts: F[Element] = elementById("charts")
+  private val chartsElement: F[Element] = elementById("charts")
 
-  def appendChild(element: Element, child: Element): F[Unit] =
+  private def appendChild(element: Element, child: Element): F[Unit] =
     Sync[F].delay(element.appendChild(child)) >> Sync[F].unit
 
-  def removeChild(element: Element, child: Element): F[Unit] =
+  private def removeChild(element: Element, child: Element): F[Unit] =
     Sync[F].delay(element.removeChild(child)) >> Sync[F].unit
 
-  def elementById(id: String): F[Element] =
+  private def elementById(id: String): F[Element] =
     Sync[F].delay(document.getElementById(id))
 
-  def onMessage(e: MessageEvent, ref: Ref[F, ClientState]): F[Unit] =
+  private def onMessage(e: MessageEvent, ref: Ref[F, ClientState]): F[Unit] =
     for {
       state    <- ref.get
       stats    <- decodeStats(e.data.toString)
@@ -64,10 +64,10 @@ class Client[F[_]: ConcurrentEffect] {
       _        <- ref.set(addState._1)
     } yield ()
 
-  def decodeStats(json: String): F[Stats] =
+  private def decodeStats(json: String): F[Stats] =
     MonadError[F, Throwable].fromEither(decode[Stats](json))
 
-  def partition(stats: Stats, state: Map[String, ContainerState]): Client.Partition = {
+  private def partition(stats: Stats, state: Map[String, ContainerState]): Client.Partition = {
     val keySet   = state.keySet
     val statsIds = stats.data.map(_.id)
 
@@ -78,16 +78,16 @@ class Client[F[_]: ConcurrentEffect] {
     Client.Partition(removed.toList, added.toList, updated.toList)
   }
 
-  def onRemoved(id: String): StateT[F, ClientState, Unit] =
+  private def onRemoved(id: String): StateT[F, ClientState, Unit] =
     StateT { state =>
       for {
-        cs    <- charts
-        child = state(id).element
-        _     <- removeChild(cs, child)
+        charts <- chartsElement
+        child  = state(id).element
+        _      <- removeChild(charts, child)
       } yield (state - id, ())
     }
 
-  def onAdded(cd: ContainerData): StateT[F, ClientState, Unit] =
+  private def onAdded(cd: ContainerData): StateT[F, ClientState, Unit] =
     StateT { state =>
       for {
         row <- rowElement
@@ -100,14 +100,14 @@ class Client[F[_]: ConcurrentEffect] {
         div            = document.createElement("div")
         _              <- appendChild(div, row)
         _              <- appendChild(div, document.createElement("hr"))
-        chrts          <- charts
-        _              <- appendChild(chrts, div)
+        charts         <- chartsElement
+        _              <- appendChild(charts, div)
         (cpu, cpuData) = cpuChart(cd)
         (mem, memData) = memChart(cd)
       } yield ((state + (cd.id -> ContainerState(div, cpu, cpuData, mem, memData))), ())
     }
 
-  def onUpdated(cd: ContainerData, state: ClientState): F[Unit] = {
+  private def onUpdated(cd: ContainerData, state: ClientState): F[Unit] = {
     val cs = state(cd.id)
     for {
       _ <- Sync[F].delay(cs.cpuData.add(cd.cpuPercentage))
@@ -122,14 +122,14 @@ class Client[F[_]: ConcurrentEffect] {
     } yield ()
   }
 
-  val rowElement: F[Element] =
+  private val rowElement: F[Element] =
     Sync[F].delay {
       val row = document.createElement("div")
       row.classList.add("mdc-layout-grid__inner")
       row
     }
 
-  def nameCard(cd: ContainerData): F[Element] =
+  private def nameCard(cd: ContainerData): F[Element] =
     for {
       card <- cardElement(2)
       _ <- List(
@@ -140,7 +140,7 @@ class Client[F[_]: ConcurrentEffect] {
           ).traverse(_.flatMap(appendChild(card, _)))
     } yield card
 
-  def cardElement(span: Int): F[Element] =
+  private def cardElement(span: Int): F[Element] =
     Sync[F].delay {
       val card = document.createElement("div")
       card.classList.add(s"mdc-layout-grid__cell--span-$span")
@@ -148,7 +148,7 @@ class Client[F[_]: ConcurrentEffect] {
       card
     }
 
-  def labelElement(text: String): F[Element] =
+  private def labelElement(text: String): F[Element] =
     Sync[F].delay {
       val label = document.createElement("h5")
       label.classList.add("label")
@@ -156,7 +156,7 @@ class Client[F[_]: ConcurrentEffect] {
       label
     }
 
-  def textElement(text: String, id: Option[String] = None): F[Element] =
+  private def textElement(text: String, id: Option[String] = None): F[Element] =
     Sync[F].delay {
       val p = document.createElement("p")
       p.innerText = text
@@ -164,7 +164,7 @@ class Client[F[_]: ConcurrentEffect] {
       p
     }
 
-  def cpuCard(cd: ContainerData): F[Element] =
+  private def cpuCard(cd: ContainerData): F[Element] =
     for {
       card <- cardElement(4)
       _ <- List(
@@ -175,7 +175,7 @@ class Client[F[_]: ConcurrentEffect] {
           ).traverse(_.flatMap(appendChild(card, _)))
     } yield card
 
-  def memCard(cd: ContainerData): F[Element] =
+  private def memCard(cd: ContainerData): F[Element] =
     for {
       card <- cardElement(4)
       _ <- List(
@@ -186,7 +186,7 @@ class Client[F[_]: ConcurrentEffect] {
           ).traverse(_.flatMap(appendChild(card, _)))
     } yield card
 
-  def chartElement(id: String): F[Element] =
+  private def chartElement(id: String): F[Element] =
     Sync[F].delay {
       val chart = document.createElement("div")
       chart.classList.add("ct-chart")
@@ -194,7 +194,7 @@ class Client[F[_]: ConcurrentEffect] {
       chart
     }
 
-  def ioCard(cd: ContainerData): F[Element] =
+  private def ioCard(cd: ContainerData): F[Element] =
     for {
       card <- cardElement(2)
       _ <- List(
@@ -207,19 +207,19 @@ class Client[F[_]: ConcurrentEffect] {
           ).traverse(_.flatMap(appendChild(card, _)))
     } yield card
 
-  def cpuChart(cd: ContainerData): (Line, Data) = {
+  private def cpuChart(cd: ContainerData): (Line, Data) = {
     val data    = new Data(cd.cpuPercentage)
     val options = Options(low = 0, axisX = Axis(false, false))
     (new Line(s"#cpu-${cd.id}", data, options), data)
   }
 
-  def memChart(cd: ContainerData): (Line, Data) = {
+  private def memChart(cd: ContainerData): (Line, Data) = {
     val data    = new Data(cd.memPercentage)
     val options = Options(low = 0, high = 100, axisX = Axis(false, false))
     (new Line(s"#mem-${cd.id}", data, options), data)
   }
 }
 
-object Client {
+private object Client {
   case class Partition(removed: List[String], added: List[String], updated: List[String])
 }
