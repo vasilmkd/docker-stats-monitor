@@ -5,6 +5,7 @@ ThisBuild / scalaVersion := "2.13.2"
 
 val http4sVersion        = "0.21.4"
 val catsVersion          = "2.1.1"
+val fs2Version           = "2.3.0"
 val circeVersion         = "0.13.0"
 val slf4jVersion         = "1.7.30"
 val kindProjectorVersion = "0.11.0"
@@ -124,9 +125,11 @@ lazy val client = (project in file("client"))
     (Compile / fastOptJS / artifactPath) := (ThisBuild / baseDirectory).value / "static" / "js" / "client.js",
     (Compile / fullOptJS / artifactPath) := (ThisBuild / baseDirectory).value / "static" / "js" / "client.js",
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom"   % "1.0.0",
-      "io.circe"     %%% "circe-generic" % circeVersion,
-      "io.circe"     %%% "circe-parser"  % circeVersion
+      "org.scala-js"  %%% "scalajs-dom"   % "1.0.0",
+      "org.typelevel" %%% "cats-effect"   % "2.1.3",
+      "co.fs2"        %%% "fs2-core"      % fs2Version,
+      "io.circe"      %%% "circe-generic" % circeVersion,
+      "io.circe"      %%% "circe-parser"  % circeVersion
     ),
     scalaJSUseMainModuleInitializer := true
   )
