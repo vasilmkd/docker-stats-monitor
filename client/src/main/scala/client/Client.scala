@@ -55,13 +55,15 @@ class Client[F[_]: ConcurrentEffect] {
 
   private def onMessage(e: MessageEvent, ref: Ref[F, ClientState]): F[Unit] =
     for {
-      state    <- ref.get
-      stats    <- decodeStats(e.data.toString)
-      parts    = partition(stats, state)
-      remState <- parts.removed.traverse(onRemoved(_).get).run(state)
-      addState <- parts.added.traverse(id => onAdded(stats.data.find(_.id === id).get)).run(remState._1)
-      _        <- parts.updated.traverse_(id => onUpdated(stats.data.find(_.id === id).get, addState._1))
-      _        <- ref.set(addState._1)
+      state <- ref.get
+      stats <- decodeStats(e.data.toString)
+      parts = partition(stats, state)
+      newState <- (for {
+                   _ <- parts.removed.traverse_(onRemoved)
+                   _ <- parts.added.traverse_(id => onAdded(stats.data.find(_.id === id).get))
+                   _ <- parts.updated.traverse_(id => onUpdated(stats.data.find(_.id === id).get))
+                 } yield ()).run(state)
+      _ <- ref.set(newState._1)
     } yield ()
 
   private def decodeStats(json: String): F[Stats] =
@@ -107,20 +109,21 @@ class Client[F[_]: ConcurrentEffect] {
       } yield ((state + (cd.id -> ContainerState(div, cpu, cpuData, mem, memData))), ())
     }
 
-  private def onUpdated(cd: ContainerData, state: ClientState): F[Unit] = {
-    val cs = state(cd.id)
-    for {
-      _ <- Sync[F].delay(cs.cpuData.add(cd.cpuPercentage))
-      _ <- Sync[F].delay(cs.cpuChart.update(cs.cpuData))
-      _ <- elementById(s"cpu-usage-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = s"${cd.cpuPercentage}%"))
-      _ <- Sync[F].delay(cs.memData.add(cd.memPercentage))
-      _ <- Sync[F].delay(cs.memChart.update(cs.memData))
-      _ <- elementById(s"mem-usage-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = cd.memUsage))
-      _ <- elementById(s"net-usage-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = cd.netIO))
-      _ <- elementById(s"block-usage-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = cd.blockIO))
-      _ <- elementById(s"pids-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = cd.pids.toString))
-    } yield ()
-  }
+  private def onUpdated(cd: ContainerData): StateT[F, ClientState, Unit] =
+    StateT { state =>
+      val cs = state(cd.id)
+      for {
+        _ <- Sync[F].delay(cs.cpuData.add(cd.cpuPercentage))
+        _ <- Sync[F].delay(cs.cpuChart.update(cs.cpuData))
+        _ <- elementById(s"cpu-usage-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = s"${cd.cpuPercentage}%"))
+        _ <- Sync[F].delay(cs.memData.add(cd.memPercentage))
+        _ <- Sync[F].delay(cs.memChart.update(cs.memData))
+        _ <- elementById(s"mem-usage-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = cd.memUsage))
+        _ <- elementById(s"net-usage-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = cd.netIO))
+        _ <- elementById(s"block-usage-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = cd.blockIO))
+        _ <- elementById(s"pids-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = cd.pids.toString))
+      } yield (state, ())
+    }
 
   private val rowElement: F[Element] =
     Sync[F].delay {
