@@ -83,12 +83,14 @@ lazy val server = (project in file("server"))
     scalacOptions ++= compilerOptions,
     addCompilerPlugin("org.typelevel" %% "kind-projector" % kindProjectorVersion cross CrossVersion.full),
     libraryDependencies ++= Seq(
-      "org.http4s" %% "http4s-blaze-server" % http4sVersion,
-      "org.http4s" %% "http4s-dsl"          % http4sVersion,
-      "org.http4s" %% "http4s-circe"        % http4sVersion,
-      "io.circe"   %% "circe-generic"       % circeVersion,
-      "org.slf4j"  % "slf4j-simple"         % slf4jVersion
+      "org.http4s"    %% "http4s-blaze-server" % http4sVersion,
+      "org.http4s"    %% "http4s-dsl"          % http4sVersion,
+      "org.http4s"    %% "http4s-circe"        % http4sVersion,
+      "io.circe"      %% "circe-generic"       % circeVersion,
+      "org.slf4j"     % "slf4j-simple"         % slf4jVersion,
+      "org.scalameta" %%% "munit"              % munitVersion % Test
     ),
+    testFrameworks += new TestFramework("munit.Framework"),
     graalVMNativeImageOptions ++= Seq(
       "--verbose",
       "--no-server",

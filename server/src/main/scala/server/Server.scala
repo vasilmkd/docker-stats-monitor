@@ -43,8 +43,8 @@ class Server[F[_]: ConcurrentEffect: ContextShift: Timer](blocker: Blocker, ec: 
             .getOrElseF(NotFound())
         case GET -> Root / "ws" =>
           val toClient: Stream[F, WebSocketFrame] =
-            DockerStats
-              .stream[F](blocker)
+            StatsStream
+              .stream[F](DockerStats.input, blocker)
               .map(s => Text(s.asJson.toString))
           val fromClient: Pipe[F, WebSocketFrame, Unit] = _.map(_ => ())
           WebSocketBuilder[F].build(toClient, fromClient)
