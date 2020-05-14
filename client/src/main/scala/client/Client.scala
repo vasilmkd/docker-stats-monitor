@@ -1,6 +1,6 @@
 package client
 
-import cats.MonadError
+import cats.{ Applicative, CommutativeApplicative, MonadError }
 import cats.data.StateT
 import cats.effect.{ ConcurrentEffect, IO, Sync }
 import cats.effect.concurrent.Ref
@@ -13,6 +13,7 @@ import org.scalajs.dom._
 
 import chartist._, Chartist._
 import models._
+import cats.data.IndexedStateT
 
 class Client[F[_]: ConcurrentEffect] {
 
@@ -53,15 +54,28 @@ class Client[F[_]: ConcurrentEffect] {
   private def elementById(id: String): F[Element] =
     Sync[F].delay(document.getElementById(id))
 
+  implicit private def instance(
+    implicit A: Applicative[StateT[F, ClientState, *]]
+  ): CommutativeApplicative[StateT[F, ClientState, *]] =
+    new CommutativeApplicative[StateT[F, ClientState, *]] {
+      def ap[A, B](ff: IndexedStateT[F, Map[String, ContainerState], Map[String, ContainerState], A => B])(
+        fa: IndexedStateT[F, Map[String, ContainerState], Map[String, ContainerState], A]
+      ): IndexedStateT[F, Map[String, ContainerState], Map[String, ContainerState], B] =
+        A.ap(ff)(fa)
+
+      def pure[A](x: A): IndexedStateT[F, Map[String, ContainerState], Map[String, ContainerState], A] =
+        A.pure(x)
+    }
+
   private def onMessage(e: MessageEvent, ref: Ref[F, ClientState]): F[Unit] =
     for {
       state <- ref.get
       stats <- decodeStats(e.data.toString)
       parts = partition(stats, state)
       newState <- (for {
-                   _ <- parts.removed.traverse_(onRemoved)
-                   _ <- parts.added.traverse_(id => onAdded(stats.data.find(_.id === id).get))
-                   _ <- parts.updated.traverse_(id => onUpdated(stats.data.find(_.id === id).get))
+                   _ <- parts.removed.unorderedTraverse(onRemoved)
+                   _ <- parts.added.unorderedTraverse(id => onAdded(stats.data.find(_.id === id).get))
+                   _ <- parts.updated.unorderedTraverse(id => onUpdated(stats.data.find(_.id === id).get))
                  } yield ()).run(state)
       _ <- ref.set(newState._1)
     } yield ()
@@ -77,7 +91,7 @@ class Client[F[_]: ConcurrentEffect] {
     val added   = statsIds.diff(keySet)
     val updated = keySet.intersect(statsIds)
 
-    Client.Partition(removed.toList, added.toList, updated.toList)
+    Client.Partition(removed, added, updated)
   }
 
   private def onRemoved(id: String): StateT[F, ClientState, Unit] =
@@ -224,5 +238,5 @@ class Client[F[_]: ConcurrentEffect] {
 }
 
 private object Client {
-  case class Partition(removed: List[String], added: List[String], updated: List[String])
+  case class Partition(removed: Set[String], added: Set[String], updated: Set[String])
 }
