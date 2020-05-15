@@ -11,7 +11,6 @@ import org.scalajs.dom._
 
 import chartist._, Chartist._
 import models._
-import cats.data.IndexedStateT
 
 class Client[F[_]: Sync] {
 
@@ -39,12 +38,10 @@ class Client[F[_]: Sync] {
     implicit A: Applicative[StateT[F, ClientState, *]]
   ): CommutativeApplicative[StateT[F, ClientState, *]] =
     new CommutativeApplicative[StateT[F, ClientState, *]] {
-      def ap[A, B](ff: IndexedStateT[F, Map[String, ContainerState], Map[String, ContainerState], A => B])(
-        fa: IndexedStateT[F, Map[String, ContainerState], Map[String, ContainerState], A]
-      ): IndexedStateT[F, Map[String, ContainerState], Map[String, ContainerState], B] =
+      def ap[A, B](ff: StateT[F, ClientState, A => B])(fa: StateT[F, ClientState, A]): StateT[F, ClientState, B] =
         A.ap(ff)(fa)
 
-      def pure[A](x: A): IndexedStateT[F, Map[String, ContainerState], Map[String, ContainerState], A] =
+      def pure[A](x: A): StateT[F, ClientState, A] =
         A.pure(x)
     }
 
