@@ -12,7 +12,7 @@ import models._
 class Client[F[_]: Sync: DOM: Charting] {
 
   val run: Pipe[F, Stats, ClientState[F]] =
-    _.evalMapAccumulate(ClientState.empty[F])((state, stats) => onStats(state, stats)).map(_._1)
+    _.evalMapAccumulate(ClientState.empty[F])(onStats).map(_._1)
 
   implicit private def instance(
     implicit A: Applicative[StateT[F, ClientState[F], *]]
