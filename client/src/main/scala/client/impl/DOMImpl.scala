@@ -140,5 +140,5 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
 }
 
 object DOMImpl {
-  implicit def apply[F[_]: Sync]: DOM[F] = new DOMImpl[F]
+  def apply[F[_]: Sync]: DOM[F] = new DOMImpl[F]
 }
