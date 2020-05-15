@@ -9,7 +9,7 @@ val fs2Version           = "2.3.0"
 val circeVersion         = "0.13.0"
 val slf4jVersion         = "1.7.30"
 val kindProjectorVersion = "0.11.0"
-val munitVersion         = "0.7.6"
+val munitVersion         = "0.7.7"
 
 val compilerOptions = Seq(
   "-deprecation", // Emit warning and location for usages of deprecated APIs.
