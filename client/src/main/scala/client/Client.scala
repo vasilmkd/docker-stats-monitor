@@ -2,11 +2,9 @@ package client
 
 import cats.{ Applicative, CommutativeApplicative, MonadError }
 import cats.data.StateT
-import cats.effect.{ ConcurrentEffect, IO, Sync }
-import cats.effect.concurrent.Ref
+import cats.effect.Sync
 import cats.implicits._
-import fs2.Stream
-import fs2.concurrent.Queue
+import fs2.Pipe
 import io.circe.generic.auto._
 import io.circe.parser._
 import org.scalajs.dom._
@@ -15,33 +13,16 @@ import chartist._, Chartist._
 import models._
 import cats.data.IndexedStateT
 
-class Client[F[_]: ConcurrentEffect] {
+class Client[F[_]: Sync] {
 
   private type ClientState = Map[String, ContainerState]
 
-  val run: F[Unit] =
-    Stream
-      .eval {
-        for {
-          ref   <- Ref[F].of[ClientState](Map.empty)
-          queue <- Queue.unbounded[F, MessageEvent]
-          _     <- socket(queue)
-        } yield (ref, queue)
-      }
-      .flatMap {
-        case (ref, queue) =>
-          queue.dequeue.evalMap(onMessage(_, ref))
-      }
-      .compile
-      .drain
+  private object ClientState {
+    val empty: ClientState = Map.empty
+  }
 
-  private def socket(queue: Queue[F, MessageEvent]): F[WebSocket] =
-    for {
-      ws <- Sync[F].delay(new WebSocket("ws://localhost:8080/ws"))
-      _ <- Sync[F].delay {
-            ws.onmessage = e => ConcurrentEffect[F].runAsync(queue.enqueue1(e))(_ => IO.unit).unsafeRunSync()
-          }
-    } yield ws
+  val run: Pipe[F, MessageEvent, Unit] =
+    _.evalMapAccumulate(ClientState.empty)((state, e) => onMessage(state, e).map((_, ()))).void
 
   private val chartsElement: F[Element] = elementById("charts")
 
@@ -67,9 +48,8 @@ class Client[F[_]: ConcurrentEffect] {
         A.pure(x)
     }
 
-  private def onMessage(e: MessageEvent, ref: Ref[F, ClientState]): F[Unit] =
+  private def onMessage(state: ClientState, e: MessageEvent): F[ClientState] =
     for {
-      state <- ref.get
       stats <- decodeStats(e.data.toString)
       parts = partition(stats, state)
       newState <- (for {
@@ -77,8 +57,7 @@ class Client[F[_]: ConcurrentEffect] {
                    _ <- parts.added.unorderedTraverse(id => onAdded(stats.data.find(_.id === id).get))
                    _ <- parts.updated.unorderedTraverse(id => onUpdated(stats.data.find(_.id === id).get))
                  } yield ()).run(state)
-      _ <- ref.set(newState._1)
-    } yield ()
+    } yield newState._1
 
   private def decodeStats(json: String): F[Stats] =
     MonadError[F, Throwable].fromEither(decode[Stats](json))

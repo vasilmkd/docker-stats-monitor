@@ -1,6 +1,6 @@
 ThisBuild / name := "docker-stats-monitor"
 ThisBuild / organization := "mk.ukim.finki.inssok.stats.monitor"
-ThisBuild / version := "0.0.3"
+ThisBuild / version := "0.0.4"
 ThisBuild / scalaVersion := "2.13.2"
 
 val http4sVersion        = "0.21.4"
