@@ -4,7 +4,7 @@ import cats.MonadError
 
 import models._
 
-final case class ClientState[F[_]: MonadError[*[_], Throwable]](private val map: Map[String, ChartState[F]]) {
+final case class ClientState[F[_]: MonadError[*[_], Throwable]](private[client] val map: Map[String, ChartState[F]]) {
 
   def +(pair: (String, ChartState[F])): ClientState[F] =
     ClientState(map + pair)
