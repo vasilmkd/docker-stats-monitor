@@ -15,13 +15,13 @@ final case class ClientState[F[_]: MonadError[*[_], Throwable]](private[client] 
   def get(id: String): F[ChartState[F]] =
     MonadError[F, Throwable].catchNonFatal(map(id))
 
-  def partition(stats: Stats): ClientState.Partition = {
-    val keySet   = map.keySet
-    val statsIds = stats.data.map(_.id)
+  def partition(data: DockerData): ClientState.Partition = {
+    val keySet       = map.keySet
+    val containerIds = data.map(_.id)
 
-    val removed = keySet.diff(statsIds)
-    val added   = statsIds.diff(keySet)
-    val updated = keySet.intersect(statsIds)
+    val removed = keySet.diff(containerIds)
+    val added   = containerIds.diff(keySet)
+    val updated = keySet.intersect(containerIds)
 
     ClientState.Partition(removed, added, updated)
   }
