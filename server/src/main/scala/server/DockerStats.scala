@@ -14,7 +14,7 @@ object DockerStats {
       "docker",
       "stats",
       "--format",
-      "table {{.ID}},{{.Name}},{{.CPUPerc}},{{.MemUsage}},{{.MemPerc}},{{.NetIO}},{{.BlockIO}},{{.PIDs}}",
+      "table {{.ID}},,,{{.Name}},,,{{.CPUPerc}},,,{{.MemUsage}},,,{{.MemPerc}},,,{{.NetIO}},,,{{.BlockIO}},,,{{.PIDs}}",
       "--no-stream"
     )
 }
