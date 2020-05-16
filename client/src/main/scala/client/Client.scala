@@ -11,8 +11,8 @@ import model._
 
 class Client[F[_]: Sync: DOM: Charting] {
 
-  val run: Pipe[F, Stats, ClientState[F]] =
-    _.evalMapAccumulate(ClientState.empty[F])(onStats).map(_._1)
+  val run: Pipe[F, DockerData, ClientState[F]] =
+    _.evalMapAccumulate(ClientState.empty[F])(onData).map(_._1)
 
   implicit private def instance(
     implicit A: Applicative[StateT[F, ClientState[F], *]]
@@ -27,13 +27,13 @@ class Client[F[_]: Sync: DOM: Charting] {
         A.pure(x)
     }
 
-  private def onStats(state: ClientState[F], stats: Stats): F[(ClientState[F], Unit)] = {
-    val parts = state.partition(stats)
+  private def onData(state: ClientState[F], data: DockerData): F[(ClientState[F], Unit)] = {
+    val parts = state.partition(data)
     for {
       newState <- (for {
                    _ <- parts.removed.unorderedTraverse(onRemoved)
-                   _ <- parts.added.unorderedTraverse(id => onAdded(stats.data.find(_.id === id).get))
-                   _ <- parts.updated.unorderedTraverse(id => onUpdated(stats.data.find(_.id === id).get))
+                   _ <- parts.added.unorderedTraverse(id => onAdded(data.find(_.id === id).get))
+                   _ <- parts.updated.unorderedTraverse(id => onUpdated(data.find(_.id === id).get))
                  } yield ()).run(state)
     } yield newState
   }

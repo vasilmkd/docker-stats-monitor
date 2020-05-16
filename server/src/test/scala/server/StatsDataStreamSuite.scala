@@ -8,9 +8,7 @@ import cats.effect.{ Blocker, ContextShift, IO, Sync, Timer }
 import cats.implicits._
 import munit.FunSuite
 
-import model._
-
-class StatsStreamSuite extends FunSuite {
+class StatsDataStreamSuite extends FunSuite {
 
   implicit private val timer: Timer[IO] =
     IO.timer(ExecutionContext.global)
@@ -32,24 +30,24 @@ class StatsStreamSuite extends FunSuite {
     lines
       .filter(_.nonEmpty)
       .drop(1)
-      .traverse(ContainerData.parseCSV[Either[Throwable, *]])
-      .map(cd => Stats(cd.toSet))
+      .traverse(Stats.parseCSV[Either[Throwable, *]])
+      .map(_.map(stats => (stats.id -> stats)).toMap)
       .toOption
       .get
 
   private def inputStream[F[_]: Sync](s: String): F[InputStream] =
     Sync[F].delay(new ByteArrayInputStream(s.getBytes()))
 
-  test("stats stream") {
+  test("stats data stream") {
     val test = Blocker[IO].use { blocker =>
-      StatsStream.stream(inputStream[IO](lines.mkString("\n")), blocker).take(3).compile.toList
+      StatsDataStream.stream(inputStream[IO](lines.mkString("\n")), blocker).compile.lastOrError
     }
-    assertEquals(test.unsafeRunSync(), List.fill(3)(expected))
+    assertEquals(test.unsafeRunSync(), expected)
   }
 
   test("invalid data") {
     val test =
-      Blocker[IO].use(blocker => StatsStream.stream(inputStream[IO](",\n,"), blocker).take(1).compile.drain).attempt
+      Blocker[IO].use(blocker => StatsDataStream.stream(inputStream[IO](",\n,"), blocker).take(1).compile.drain).attempt
     assert(test.unsafeRunSync().isLeft)
   }
 }
