@@ -8,7 +8,7 @@ import io.circe.generic.auto._
 import io.circe.parser._
 import org.scalajs.dom._
 
-import models._
+import model._
 
 object WebsocketStream {
 

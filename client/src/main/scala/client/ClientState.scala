@@ -2,7 +2,7 @@ package client
 
 import cats.MonadError
 
-import models._
+import model._
 
 final case class ClientState[F[_]: MonadError[*[_], Throwable]](private[client] val map: Map[String, ChartState[F]]) {
 

@@ -1,6 +1,6 @@
 package client
 
-import models._
+import model._
 
 trait DOM[F[_]] {
   def onAdded(cd: ContainerData): F[Unit]
