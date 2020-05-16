@@ -1,7 +1,7 @@
 package client
 
 import cats.Applicative
-import models.ContainerData
+import model.ContainerData
 
 object TestDOM {
   def apply[F[_]: Applicative]: DOM[F] =

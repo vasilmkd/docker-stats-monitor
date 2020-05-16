@@ -9,7 +9,7 @@ import cats.effect.{ Blocker, ContextShift, Sync, Timer }
 import fs2.{ text, Stream }
 import fs2.io._
 
-import models._
+import model._
 
 object StatsStream {
 

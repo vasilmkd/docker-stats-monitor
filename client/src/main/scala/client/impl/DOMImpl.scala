@@ -5,7 +5,7 @@ import cats.implicits._
 import org.scalajs.dom._
 
 import client.DOM
-import models._
+import model._
 
 class DOMImpl[F[_]: Sync] extends DOM[F] {
 

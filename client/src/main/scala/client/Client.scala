@@ -7,7 +7,7 @@ import cats.implicits._
 import fs2.Pipe
 
 import chartist._
-import models._
+import model._
 
 class Client[F[_]: Sync: DOM: Charting] {
 

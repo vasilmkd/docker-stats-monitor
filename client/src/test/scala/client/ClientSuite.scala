@@ -4,7 +4,7 @@ import cats.effect.IO
 import fs2.Stream
 import munit.FunSuite
 
-import models._
+import model._
 
 class ClientSuite extends FunSuite {
 
