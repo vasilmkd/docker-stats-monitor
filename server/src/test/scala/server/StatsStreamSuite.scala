@@ -8,7 +8,7 @@ import cats.effect.{ Blocker, ContextShift, IO, Sync, Timer }
 import cats.implicits._
 import munit.FunSuite
 
-import models._
+import model._
 
 class StatsStreamSuite extends FunSuite {
 

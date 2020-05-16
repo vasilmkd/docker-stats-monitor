@@ -1,4 +1,4 @@
-package models
+package model
 
 import cats.MonadError
 import cats.implicits._

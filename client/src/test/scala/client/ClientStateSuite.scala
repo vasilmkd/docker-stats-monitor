@@ -3,7 +3,7 @@ package client
 import cats.implicits._
 import munit.FunSuite
 
-import models._
+import model._
 
 class ClientStateSuite extends FunSuite {
 
