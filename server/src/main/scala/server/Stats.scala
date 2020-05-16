@@ -1,6 +1,6 @@
 package server
 
-import cats.MonadError
+import cats.{ Applicative, MonadError }
 import cats.implicits._
 
 final case class Stats(
@@ -23,9 +23,9 @@ object Stats {
 
   private def splitLine[F[_]: MonadError[*[_], Throwable]](line: String): F[Array[String]] =
     for {
-      parts <- line.split(",").pure[F]
+      parts <- Applicative[F].pure(line.split(","))
       _ <- MonadError[F, Throwable]
-            .raiseError(new IllegalStateException(s"Invalid container data csv: $line"))
+            .raiseError(new IllegalStateException(s"Invalid docker stats data csv: $line"))
             .whenA(parts.length < 8)
     } yield parts
 
