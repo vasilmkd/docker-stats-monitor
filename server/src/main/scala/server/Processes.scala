@@ -21,7 +21,7 @@ object Processes {
 
   private def splitLine[F[_]: MonadError[*[_], Throwable]](line: String): F[Array[String]] =
     for {
-      parts <- Applicative[F].pure(line.split("\t"))
+      parts <- Applicative[F].pure(line.split(",,,"))
       _ <- MonadError[F, Throwable]
             .raiseError(new IllegalStateException(s"Invalid docker ps data csv: $line"))
             .whenA(parts.length < 6)
