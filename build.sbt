@@ -63,18 +63,7 @@ lazy val root = (project in file("."))
   )
 
 lazy val shared = crossProject(JVMPlatform, JSPlatform)
-  .settings(
-    scalacOptions ++= compilerOptions,
-    addCompilerPlugin("org.typelevel" %% "kind-projector" % kindProjectorVersion cross CrossVersion.full),
-    libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-core" % catsVersion,
-      "org.scalameta" %%% "munit"     % munitVersion % Test
-    ),
-    testFrameworks += new TestFramework("munit.Framework")
-  )
-  .jsSettings(
-    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
-  )
+  .settings(scalacOptions ++= compilerOptions)
   .in(file("shared"))
 
 lazy val server = (project in file("server"))

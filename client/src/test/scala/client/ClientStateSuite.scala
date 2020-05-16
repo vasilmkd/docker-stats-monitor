@@ -35,28 +35,26 @@ class ClientStateSuite extends FunSuite {
   }
 
   test("partition") {
-    val stats = Stats(
-      Set(
-        ContainerData(
-          "974a307336dc",
-          "xenodochial_colden",
-          4.59,
-          "1.147GiB / 1.944GiB",
-          59.00,
-          "1.05kB / 0B",
-          "0B / 0B",
-          42
-        ),
-        ContainerData(
-          "a50c5dbb6f4a",
-          "happy_stonebraker",
-          5.51,
-          "1.111GiB / 1.944GiB",
-          57.14,
-          "766B / 0B",
-          "0B / 0B",
-          61
-        )
+    val stats = Set(
+      ContainerData(
+        "974a307336dc",
+        "xenodochial_colden",
+        4.59,
+        "1.147GiB / 1.944GiB",
+        59.00,
+        "1.05kB / 0B",
+        "0B / 0B",
+        42
+      ),
+      ContainerData(
+        "a50c5dbb6f4a",
+        "happy_stonebraker",
+        5.51,
+        "1.111GiB / 1.944GiB",
+        57.14,
+        "766B / 0B",
+        "0B / 0B",
+        61
       )
     )
 

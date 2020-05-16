@@ -6,7 +6,7 @@ import cats.effect.{ Blocker, ContextShift, IO, Resource, Timer }
 import cats.implicits._
 import munit.FunSuite
 
-class DockerStatsSuite extends FunSuite {
+class DockerIntegrationSuite extends FunSuite {
 
   implicit private val contextShift: ContextShift[IO] =
     IO.contextShift(ExecutionContext.global)
@@ -41,7 +41,7 @@ class DockerStatsSuite extends FunSuite {
   private val withContainer: Resource[IO, Unit] =
     Resource.make(runProcess)(_ => stopProcess)
 
-  test("docker stats") {
+  test("integration") {
     val blocker = for {
       _       <- withContainer
       blocker <- Blocker[IO]
@@ -49,23 +49,23 @@ class DockerStatsSuite extends FunSuite {
 
     blocker
       .use { blocker =>
-        StatsStream
-          .stream(DockerStats.input[IO], blocker)
+        DockerDataStream
+          .stream[IO](blocker)
           .take(3)
           .compile
           .toList
       }
       .unsafeRunSync()
-      .foreach { stats =>
-        val data = stats.data.find(_.name === "monitor").get
-        assert(data.id.nonEmpty)
-        assertEquals(data.name, "monitor")
-        assert(data.cpuPercentage >= 0)
-        assert(data.memUsage.nonEmpty)
-        assert(data.memPercentage >= 0)
-        assert(data.netIO.nonEmpty)
-        assert(data.blockIO.nonEmpty)
-        assert(data.pids >= 0)
+      .foreach { data =>
+        val cd = data.find(_.name === "monitor").get
+        assert(cd.id.nonEmpty)
+        assertEquals(cd.name, "monitor")
+        assert(cd.cpuPercentage >= 0)
+        assert(cd.memUsage.nonEmpty)
+        assert(cd.memPercentage >= 0)
+        assert(cd.netIO.nonEmpty)
+        assert(cd.blockIO.nonEmpty)
+        assert(cd.pids >= 0)
       }
   }
 }

@@ -12,7 +12,7 @@ import model._
 
 object WebsocketStream {
 
-  def stream[F[_]: ConcurrentEffect]: Stream[F, Stats] =
+  def stream[F[_]: ConcurrentEffect]: Stream[F, DockerData] =
     Stream
       .eval {
         for {
@@ -23,8 +23,8 @@ object WebsocketStream {
       }
       .flatMap(_.dequeue)
       .map(_.data.toString)
-      .evalMap(decodeStats[F])
+      .evalMap(decodeDockerData[F])
 
-  private def decodeStats[F[_]: Sync](json: String): F[Stats] =
-    Sync[F].fromEither(decode[Stats](json))
+  private def decodeDockerData[F[_]: Sync](json: String): F[DockerData] =
+    Sync[F].fromEither(decode[DockerData](json))
 }
