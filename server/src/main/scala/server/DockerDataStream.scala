@@ -27,6 +27,7 @@ object DockerDataStream {
               val processes                                                                    = processesData.get(id).getOrElse(Processes(id, "", "", "", "", ""))
               val Stats(_, name, cpuPercentage, memUsage, memPercentage, netIO, blockIO, pids) = stats
               val Processes(_, image, created, ports, status, size)                            = processes
+              val mappedPorts                                                                  = if (ports.isEmpty) "No mapped ports" else ports
               ContainerData(
                 id,
                 name,
@@ -40,7 +41,7 @@ object DockerDataStream {
                 blockIO,
                 pids,
                 size,
-                ports
+                mappedPorts
               )
           }
           .toSet[ContainerData]
