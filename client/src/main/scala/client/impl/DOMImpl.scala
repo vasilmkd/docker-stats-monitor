@@ -43,7 +43,6 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
       _ <- updateText(s"block-usage-${cd.id}", cd.blockIO)
       _ <- updateText(s"pids-${cd.id}", cd.pids.toString)
       _ <- updateText(s"size-${cd.id}", cd.size)
-      _ <- updateText(s"ports-${cd.id}", cd.ports)
     } yield ()
 
   private def updateText(id: String, text: String): F[Unit] =

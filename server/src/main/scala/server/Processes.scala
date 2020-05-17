@@ -29,6 +29,6 @@ object Processes {
 
   private def parseParts[F[_]: MonadError[*[_], Throwable]](parts: Array[String]): F[Processes] =
     MonadError[F, Throwable].catchNonFatal(
-      Processes(parts(0).substring(0, 12), parts(1), parts(2), parts(3), parts(4), parts(5))
+      Processes(parts(0), parts(1), parts(2), parts(3), parts(4), parts(5))
     )
 }
