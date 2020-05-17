@@ -11,16 +11,39 @@ import model._
 object DockerDataStream {
 
   def stream[F[_]: Sync: ContextShift: Timer](blocker: Blocker): Stream[F, DockerData] =
-    ticker(StatsDataStream.stream[F](DockerStats.input[F], blocker).through(combiner))
+    ticker(
+      StatsDataStream
+        .stream[F](DockerStats.input, blocker)
+        .zip(ProcessesDataStream.stream[F](DockerProcesses.input, blocker))
+        .through(combiner)
+    )
 
-  private def combiner[F[_]]: Pipe[F, StatsData, DockerData] =
-    _.map { statsData =>
-      statsData.values
-        .map { stats =>
-          val Stats(id, name, cpuPercentage, memUsage, memPercentage, netIO, blockIO, pids) = stats
-          ContainerData(id, name, cpuPercentage, memUsage, memPercentage, netIO, blockIO, pids)
-        }
-        .toSet[ContainerData]
+  private def combiner[F[_]]: Pipe[F, (StatsData, ProcessesData), DockerData] =
+    _.map {
+      case (statsData, processesData) =>
+        statsData
+          .map {
+            case (id, stats) =>
+              val processes                                                                    = processesData.get(id).getOrElse(Processes(id, "", "", "", "", ""))
+              val Stats(_, name, cpuPercentage, memUsage, memPercentage, netIO, blockIO, pids) = stats
+              val Processes(_, image, created, ports, status, size)                            = processes
+              ContainerData(
+                id,
+                name,
+                image,
+                created,
+                status,
+                cpuPercentage,
+                memUsage,
+                memPercentage,
+                netIO,
+                blockIO,
+                pids,
+                size,
+                ports
+              )
+          }
+          .toSet[ContainerData]
     }
 
   private def ticker[F[_]: Functor: Timer, A](stream: Stream[F, A]): Stream[F, A] =
