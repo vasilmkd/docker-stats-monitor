@@ -76,7 +76,7 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
             labelElement("Container name:"),
             textElement(cd.name),
             labelElement("Container id:"),
-            textElement(cd.id.substring(0, 12)),
+            textElement(cd.id),
             labelElement("Container image:"),
             textElement(cd.image),
             labelElement("Created:"),
