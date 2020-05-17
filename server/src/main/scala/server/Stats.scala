@@ -34,7 +34,7 @@ object Stats {
       val cpuPercentage = parts(2).replace("%", "").toDouble
       val memPercentage = parts(4).replace("%", "").toDouble
       Stats(
-        parts(0).substring(0, 12),
+        parts(0),
         parts(1),
         cpuPercentage,
         parts(3),
