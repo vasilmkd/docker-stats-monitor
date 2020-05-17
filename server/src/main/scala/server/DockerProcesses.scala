@@ -13,7 +13,6 @@ object DockerProcesses {
     .command(
       "docker",
       "ps",
-      "--no-trunc",
       "--format",
       "table {{.ID}},,,{{.Image}},,,{{.RunningFor}},,,{{.Ports}},,,{{.Status}},,,{{.Size}}"
     )
