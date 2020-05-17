@@ -35,11 +35,21 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
 
   override def onUpdated(cd: ContainerData): F[Unit] =
     for {
-      _ <- elementById(s"cpu-usage-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = s"${cd.cpuPercentage}%"))
-      _ <- elementById(s"mem-usage-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = cd.memUsage))
-      _ <- elementById(s"net-usage-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = cd.netIO))
-      _ <- elementById(s"block-usage-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = cd.blockIO))
-      _ <- elementById(s"pids-${cd.id}").flatMap(e => Sync[F].delay(e.innerText = cd.pids.toString))
+      _ <- updateText(s"running-${cd.id}", cd.runningFor)
+      _ <- updateText(s"status-${cd.id}", cd.status)
+      _ <- updateText(s"cpu-usage-${cd.id}", s"${cd.cpuPercentage}%")
+      _ <- updateText(s"mem-usage-${cd.id}", cd.memUsage)
+      _ <- updateText(s"net-usage-${cd.id}", cd.netIO)
+      _ <- updateText(s"block-usage-${cd.id}", cd.blockIO)
+      _ <- updateText(s"pids-${cd.id}", cd.pids.toString)
+      _ <- updateText(s"size-${cd.id}", cd.size)
+      _ <- updateText(s"ports-${cd.id}", cd.ports)
+    } yield ()
+
+  private def updateText(id: String, text: String): F[Unit] =
+    for {
+      e <- elementById(id)
+      _ <- Sync[F].delay(e.innerText = text)
     } yield ()
 
   private val chartsElement: F[Element] = elementById("charts")
@@ -67,7 +77,13 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
             labelElement("Container name:"),
             textElement(cd.name),
             labelElement("Container id:"),
-            textElement(cd.id.substring(0, 12))
+            textElement(cd.id),
+            labelElement("Container image:"),
+            textElement(cd.image),
+            labelElement("Running for:"),
+            textElement(cd.runningFor, Some(s"running-${cd.id}")),
+            labelElement("Status:"),
+            textElement(cd.status, Some(s"status-${cd.id}"))
           ).traverse(_.flatMap(appendChild(card, _)))
     } yield card
 
@@ -102,7 +118,11 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
             labelElement("Block I/O:"),
             textElement(cd.blockIO, Some(s"block-usage-${cd.id}")),
             labelElement("PIDs:"),
-            textElement(cd.pids.toString, Some(s"pids-${cd.id}"))
+            textElement(cd.pids.toString, Some(s"pids-${cd.id}")),
+            labelElement("Size:"),
+            textElement(cd.size, Some(s"size-${cd.id}")),
+            labelElement("Ports:"),
+            textElement(cd.ports, Some(s"ports-${cd.id}"))
           ).traverse(_.flatMap(appendChild(card, _)))
     } yield card
 
@@ -134,6 +154,7 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
     Sync[F].delay {
       val chart = document.createElement("div")
       chart.classList.add("ct-chart")
+      chart.classList.add("ct-minor-sixth")
       chart.id = id
       chart
     }
