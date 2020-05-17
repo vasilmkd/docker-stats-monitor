@@ -16,12 +16,17 @@ class ClientSuite extends FunSuite {
     ContainerData(
       "974a307336dc",
       "xenodochial_colden",
+      "cassandra:3.11.6",
+      "3 hours ago",
+      "Up 3 hours",
       171.67,
       "1.142GiB / 1.944GiB",
       58.73,
       "766B / 0B",
       "0B / 0B",
-      61
+      61,
+      "884kB (virtual 379MB)",
+      "7000-7001/tcp, 7199/tcp, 9042/tcp, 9160/tcp"
     )
   )
 
@@ -29,22 +34,32 @@ class ClientSuite extends FunSuite {
     ContainerData(
       "974a307336dc",
       "xenodochial_colden",
+      "cassandra:3.11.6",
+      "3 hours ago",
+      "Up 3 hours",
       4.59,
       "1.147GiB / 1.944GiB",
       59.00,
       "1.05kB / 0B",
       "0B / 0B",
-      42
+      42,
+      "884kB (virtual 379MB)",
+      "7000-7001/tcp, 7199/tcp, 9042/tcp, 9160/tcp"
     ),
     ContainerData(
       "a50c5dbb6f4a",
       "happy_stonebraker",
+      "cassandra:3.11.6",
+      "3 hours ago",
+      "Up 3 hours",
       5.51,
       "1.111GiB / 1.944GiB",
       57.14,
       "766B / 0B",
       "0B / 0B",
-      61
+      61,
+      "884kB (virtual 379MB)",
+      "7000-7001/tcp, 7199/tcp, 9042/tcp, 9160/tcp"
     )
   )
 
@@ -52,12 +67,17 @@ class ClientSuite extends FunSuite {
     ContainerData(
       "a50c5dbb6f4a",
       "happy_stonebraker",
+      "cassandra:3.11.6",
+      "3 hours ago",
+      "Up 3 hours",
       5.58,
       "1.149GiB / 1.944GiB",
       59.08,
       "976B / 0B",
       "0B / 0B",
-      43
+      43,
+      "884kB (virtual 379MB)",
+      "7000-7001/tcp, 7199/tcp, 9042/tcp, 9160/tcp"
     )
   )
 

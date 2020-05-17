@@ -60,12 +60,17 @@ class DockerIntegrationSuite extends FunSuite {
         val cd = data.find(_.name === "monitor").get
         assert(cd.id.nonEmpty)
         assertEquals(cd.name, "monitor")
+        assertEquals(cd.image, "vasilvasilev97/docker-stats-monitor")
+        assert(cd.runningFor.nonEmpty)
+        assert(cd.status.nonEmpty)
         assert(cd.cpuPercentage >= 0)
         assert(cd.memUsage.nonEmpty)
         assert(cd.memPercentage >= 0)
         assert(cd.netIO.nonEmpty)
         assert(cd.blockIO.nonEmpty)
         assert(cd.pids >= 0)
+        assert(cd.size.nonEmpty)
+        assert(cd.ports.nonEmpty)
       }
   }
 }
