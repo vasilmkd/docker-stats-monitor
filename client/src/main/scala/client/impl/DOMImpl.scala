@@ -80,7 +80,7 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
             textElement(cd.id.substring(0, 12)),
             labelElement("Container image:"),
             textElement(cd.image),
-            labelElement("Running for:"),
+            labelElement("Created:"),
             textElement(cd.runningFor, Some(s"running-${cd.id}")),
             labelElement("Status:"),
             textElement(cd.status, Some(s"status-${cd.id}"))

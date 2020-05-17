@@ -33,6 +33,15 @@ object Stats {
     MonadError[F, Throwable].catchNonFatal {
       val cpuPercentage = parts(2).replace("%", "").toDouble
       val memPercentage = parts(4).replace("%", "").toDouble
-      Stats(parts(0), parts(1), cpuPercentage, parts(3), memPercentage, parts(5), parts(6), parts(7).toInt)
+      Stats(
+        parts(0).substring(0, 12),
+        parts(1),
+        cpuPercentage,
+        parts(3),
+        memPercentage,
+        parts(5),
+        parts(6),
+        parts(7).toInt
+      )
     }
 }
