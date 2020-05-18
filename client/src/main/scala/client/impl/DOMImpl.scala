@@ -102,7 +102,7 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
       card <- cardElement(4)
       _ <- List(
             labelElement("Memory usage:"),
-            textElement(s"${cd.memPercentage}%", Some(s"mem-usage-${cd.id}")),
+            textElement(s"${cd.memUsage}%", Some(s"mem-usage-${cd.id}")),
             labelElement("Memory %"),
             chartElement(s"mem-${cd.id}")
           ).traverse(_.flatMap(appendChild(card, _)))
