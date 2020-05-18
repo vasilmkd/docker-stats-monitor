@@ -8,6 +8,6 @@ trait Axis extends js.Object {
 }
 
 object Axis {
-  def apply(showLabel: Boolean = true, showGrid: Boolean = true): Axis =
+  def apply(showLabel: Boolean = false, showGrid: Boolean = false): Axis =
     js.Dynamic.literal("showLabel" -> showLabel, "showGrid" -> showGrid).asInstanceOf[Axis]
 }

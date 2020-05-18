@@ -1,15 +1,18 @@
 package client.chartist
 
 import scala.scalajs.js
+import scala.scalajs.js.JSConverters._
 
 class Data(initial: Double) extends js.Object {
-  private var counter                    = 2
-  val labels: js.Array[Int]              = js.Array(0, 1)
-  val series: js.Array[js.Array[Double]] = js.Array(js.Array(0.0, initial))
+  val labels: js.Array[Int] = Array.range(0, 30).toJSArray
+  val series: js.Array[js.Array[Double]] = {
+    val array = new Array[Double](30)
+    array(29) = initial
+    js.Array(array.toJSArray)
+  }
 
   def add(v: Double): Unit = {
-    labels.push(counter)
-    counter += 1
+    series(0).sliceInPlace(1, 30)
     series(0).push(v)
     ()
   }
