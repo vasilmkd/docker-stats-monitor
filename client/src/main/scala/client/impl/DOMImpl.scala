@@ -153,7 +153,7 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
     Sync[F].delay {
       val chart = document.createElement("div")
       chart.classList.add("ct-chart")
-      chart.classList.add("ct-minor-sixth")
+      chart.classList.add("ct-perfect-fourth")
       chart.id = id
       chart
     }

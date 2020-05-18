@@ -52,12 +52,12 @@ class Client[F[_]: Sync: DOM: Charting] {
         cpuChart <- Charting[F].createLineChart(
                      s"#cpu-${cd.id}",
                      cd.cpuPercentage,
-                     Options(low = 0, axisX = Axis(false, false))
+                     Options(low = 0)
                    )
         memChart <- Charting[F].createLineChart(
                      s"#mem-${cd.id}",
                      cd.memPercentage,
-                     Options(low = 0, high = 100, axisX = Axis(false, false))
+                     Options(low = 0)
                    )
       } yield (state + (cd.id -> ChartState(cpuChart, memChart)), ())
     }
