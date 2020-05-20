@@ -1,4 +1,4 @@
-FROM oracle/graalvm-ce:20.0.0-java11 as builder
+FROM oracle/graalvm-ce:20.1.0-java11 as builder
 RUN gu install native-image
 RUN curl https://bintray.com/sbt/rpm/rpm | tee /etc/yum.repos.d/bintray-sbt-rpm.repo && \
     yum install -y sbt
