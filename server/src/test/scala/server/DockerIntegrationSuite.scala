@@ -4,6 +4,8 @@ import scala.concurrent.ExecutionContext
 
 import cats.effect.{ Blocker, ContextShift, IO, Resource, Timer }
 import cats.implicits._
+import fs2.io._
+import fs2.text
 import munit.FunSuite
 
 class DockerIntegrationSuite extends FunSuite {
@@ -20,57 +22,62 @@ class DockerIntegrationSuite extends FunSuite {
       "run",
       "-d",
       "--rm",
-      "--name",
-      "monitor",
-      "-p",
-      "8080:8080",
       "-v",
       "/var/run/docker.sock:/var/run/docker.sock",
       "vasilvasilev97/docker-stats-monitor"
     )
 
-  private val runProcess: IO[Unit] =
-    IO(dockerRun.start().waitFor()).void
+  private def runContainer(blocker: Blocker): IO[String] = {
+    val fis = IO(dockerRun.start().getInputStream())
+    readInputStream(fis, 8192, blocker)
+      .through(text.utf8Decode)
+      .compile
+      .string
+      .map(_.substring(0, 12))
+  }
 
-  private val dockerStop = new ProcessBuilder()
-    .command("docker", "stop", "monitor")
+  private def dockerStop(id: String): ProcessBuilder =
+    new ProcessBuilder()
+      .command("docker", "stop", id)
 
-  private val stopProcess: IO[Unit] =
-    IO(dockerStop.start().waitFor()).void
+  private def stopContainer(id: String): IO[Unit] = {
+    println(id)
+    IO(dockerStop(id).start().waitFor()).void
+  }
 
-  private val withContainer: Resource[IO, Unit] =
-    Resource.make(runProcess)(_ => stopProcess)
+  private def withContainer(blocker: Blocker): Resource[IO, String] =
+    Resource.make(runContainer(blocker))(stopContainer)
 
   test("integration") {
-    val blocker = for {
-      _       <- withContainer
+    val blockerAndId = for {
       blocker <- Blocker[IO]
-    } yield blocker
+      id      <- withContainer(blocker)
+    } yield (blocker, id)
 
-    blocker
-      .use { blocker =>
-        DockerDataStream
-          .stream[IO](blocker)
-          .take(3)
-          .compile
-          .toList
+    blockerAndId
+      .use {
+        case (blocker, id) =>
+          DockerDataStream
+            .stream[IO](blocker)
+            .take(3)
+            .compile
+            .toList
+            .map(_.map(_.find(_.id === id).get))
       }
       .unsafeRunSync()
       .foreach { data =>
-        val cd = data.find(_.name === "monitor").get
-        assert(cd.id.nonEmpty)
-        assertEquals(cd.name, "monitor")
-        assertEquals(cd.image, "vasilvasilev97/docker-stats-monitor")
-        assert(cd.runningFor.nonEmpty)
-        assert(cd.status.nonEmpty)
-        assert(cd.cpuPercentage >= 0)
-        assert(cd.memUsage.nonEmpty)
-        assert(cd.memPercentage >= 0)
-        assert(cd.netIO.nonEmpty)
-        assert(cd.blockIO.nonEmpty)
-        assert(cd.pids >= 0)
-        assert(cd.size.nonEmpty)
-        assert(cd.ports.nonEmpty)
+        assert(data.name.nonEmpty)
+        assertEquals(data.image, "vasilvasilev97/docker-stats-monitor")
+        assert(data.runningFor.nonEmpty)
+        assert(data.status.nonEmpty)
+        assert(data.cpuPercentage >= 0)
+        assert(data.memUsage.nonEmpty)
+        assert(data.memPercentage >= 0)
+        assert(data.netIO.nonEmpty)
+        assert(data.blockIO.nonEmpty)
+        assert(data.pids >= 0)
+        assert(data.size.nonEmpty)
+        assert(data.ports.nonEmpty)
       }
   }
 }

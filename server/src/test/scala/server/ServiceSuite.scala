@@ -5,8 +5,8 @@ import java.io.{ File, FileInputStream }
 import scala.concurrent.ExecutionContext
 
 import cats.effect.{ Blocker, ContextShift, IO, Timer }
-import fs2.text
 import fs2.io._
+import fs2.text
 import munit.FunSuite
 import org.http4s.{ HttpVersion, Method, Request, Status }
 import org.http4s.implicits._
