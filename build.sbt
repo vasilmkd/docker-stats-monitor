@@ -1,6 +1,6 @@
 ThisBuild / name := "docker-stats-monitor"
 ThisBuild / organization := "mk.ukim.finki.inssok.stats.monitor"
-ThisBuild / version := "0.2.1"
+ThisBuild / version := "0.3.0"
 ThisBuild / scalaVersion := "2.13.2"
 
 val http4sVersion        = "0.21.4"
@@ -96,11 +96,13 @@ lazy val server = (project in file("server"))
       "-H:+ReportUnsupportedElementsAtRuntime",
       "-H:+TraceClassInitialization",
       "-H:+PrintClassInitialization",
+      "-H:+RemoveSaturatedTypeFlows",
       "-H:+StackTrace",
       "-H:+JNI",
       "-H:-SpawnIsolates",
       "-H:-UseServiceLoaderFeature",
       "-H:UseMuslC=../../../bundle/",
+      "--install-exit-handlers",
       "--initialize-at-build-time=scala.runtime.Statics$VM"
     )
   )
