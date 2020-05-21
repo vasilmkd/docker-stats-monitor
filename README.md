@@ -12,10 +12,12 @@ Slim docker image (`FROM scratch`) containing only the application and docker bi
 Run with:
 
 ```
-docker run -d --name monitor -p "8080:8080" -v /var/run/docker.sock:/var/run/docker.sock vasilvasilev97/docker-stats-monitor
+docker run -d --name monitor --memory=64m --memory-swap=64m -p "8080:8080" -v /var/run/docker.sock:/var/run/docker.sock vasilvasilev97/docker-stats-monitor
 ```
 
 and visit [localhost:8080](http://localhost:8080/).
+
+Note that we use `--memory` to configure the amount of memory available to the docker container. GraalVM native images can operate with a reasonably low memory consumption but it's impossible to figure out good ergonomics automatically on a machine with enough resources. Another option would be to configure heap size in the Dockerfile using [native image configuration options](https://github.com/oracle/graal/blob/master/substratevm/OPTIONS.md#garbage-collection-options).
 
 ## Tests
 
