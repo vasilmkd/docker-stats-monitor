@@ -13,6 +13,8 @@ Run with:
 docker run -d --name monitor -p "8080:8080" -v /var/run/docker.sock:/var/run/docker.sock vasilvasilev97/docker-stats-monitor
 ```
 
+and visit [localhost:8080](http://localhost:8080/).
+
 ## Tests
 
 There are integration tests with Docker that can be run using `sbt run`. Note: the docker executable needs to be available on the `PATH` and the docker daemon needs to be running when executing the tests.
