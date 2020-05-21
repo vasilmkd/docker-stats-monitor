@@ -1,5 +1,7 @@
 # Docker stats monitor
 
+![Screenshot](./screenshot.png)
+
 [Http4s](https://http4s.org) application that uses [fs2](https://fs2.io) streams to send `docker stats` and `docker ps` data over a websocket connection to a Scala JS frontend which visualizes the results using the [chartist.js](https://gionkunz.github.io/chartist-js/) library.
 
 ## Docker image
