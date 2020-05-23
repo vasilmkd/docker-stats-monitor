@@ -24,9 +24,9 @@ object Stats {
   private def splitLine[F[_]: MonadError[*[_], Throwable]](line: String): F[Array[String]] =
     for {
       parts <- Applicative[F].pure(line.split(",,,"))
-      _ <- MonadError[F, Throwable]
-            .raiseError(new IllegalStateException(s"Invalid docker stats data csv: $line"))
-            .whenA(parts.length < 8)
+      _     <- MonadError[F, Throwable]
+             .raiseError(new IllegalStateException(s"Invalid docker stats data csv: $line"))
+             .whenA(parts.length < 8)
     } yield parts
 
   private def parseParts[F[_]: MonadError[*[_], Throwable]](parts: Array[String]): F[Stats] =
