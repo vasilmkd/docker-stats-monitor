@@ -28,8 +28,8 @@ class Service[F[_]: Sync: ContextShift: Timer](blocker: Blocker) extends Http4sD
           .fromFile(new File("static/html/index.html"), blocker, Some(request))
           .getOrElseF(NotFound())
 
-      case GET -> Root / "ws" =>
-        val toClient: Stream[F, WebSocketFrame] =
+      case GET -> Root / "ws"    =>
+        val toClient: Stream[F, WebSocketFrame]       =
           DockerDataStream
             .stream[F](blocker)
             .map(s => WebSocketFrame.Text(s.asJson.toString))

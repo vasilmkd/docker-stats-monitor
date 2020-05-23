@@ -28,7 +28,7 @@ class ServiceSuite extends FunSuite {
           _    <- IO(assertEquals(res.status, Status.Ok))
           _    <- IO(assertEquals(res.httpVersion, HttpVersion.`HTTP/1.1`))
           body <- res.body.through(text.utf8Decode).compile.string
-          fis  = IO(new FileInputStream(new File("static/html/index.html")))
+          fis   = IO(new FileInputStream(new File("static/html/index.html")))
           file <- readInputStream[IO](fis, 8192, blocker).through(text.utf8Decode).compile.string
         } yield assertEquals(body, file)
       }

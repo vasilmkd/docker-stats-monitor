@@ -14,8 +14,8 @@ class Client[F[_]: Sync: DOM: Charting] {
   val run: Pipe[F, DockerData, ClientState[F]] =
     _.evalMapAccumulate(ClientState.empty[F])(onData).map(_._1)
 
-  implicit private def instance(
-    implicit A: Applicative[StateT[F, ClientState[F], *]]
+  implicit private def instance(implicit
+    A: Applicative[StateT[F, ClientState[F], *]]
   ): CommutativeApplicative[StateT[F, ClientState[F], *]] =
     new CommutativeApplicative[StateT[F, ClientState[F], *]] {
       def ap[A, B](
@@ -31,10 +31,10 @@ class Client[F[_]: Sync: DOM: Charting] {
     val parts = state.partition(data)
     for {
       newState <- (for {
-                   _ <- parts.removed.unorderedTraverse(onRemoved)
-                   _ <- parts.added.unorderedTraverse(id => onAdded(data.find(_.id === id).get))
-                   _ <- parts.updated.unorderedTraverse(id => onUpdated(data.find(_.id === id).get))
-                 } yield ()).run(state)
+                      _ <- parts.removed.unorderedTraverse(onRemoved)
+                      _ <- parts.added.unorderedTraverse(id => onAdded(data.find(_.id === id).get))
+                      _ <- parts.updated.unorderedTraverse(id => onUpdated(data.find(_.id === id).get))
+                    } yield ()).run(state)
     } yield newState
   }
 
@@ -48,17 +48,17 @@ class Client[F[_]: Sync: DOM: Charting] {
   private def onAdded(cd: ContainerData): StateT[F, ClientState[F], Unit] =
     StateT { state =>
       for {
-        _ <- DOM[F].onAdded(cd)
+        _        <- DOM[F].onAdded(cd)
         cpuChart <- Charting[F].createLineChart(
-                     s"#cpu-${cd.id}",
-                     cd.cpuPercentage,
-                     Options(low = 0)
-                   )
+                      s"#cpu-${cd.id}",
+                      cd.cpuPercentage,
+                      Options(low = 0)
+                    )
         memChart <- Charting[F].createLineChart(
-                     s"#mem-${cd.id}",
-                     cd.memPercentage,
-                     Options(low = 0)
-                   )
+                      s"#mem-${cd.id}",
+                      cd.memPercentage,
+                      Options(low = 0)
+                    )
       } yield (state + (cd.id -> ChartState(cpuChart, memChart)), ())
     }
 
