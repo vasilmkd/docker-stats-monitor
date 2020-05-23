@@ -6,7 +6,7 @@ import munit.FunSuite
 class StatsSuite extends FunSuite {
 
   test("parse") {
-    val line =
+    val line   =
       "ed4e5c72308a-everythingelseistruncated,,,affectionate_shockley,,,0.00%,,,1.148MiB / 1.944GiB,,,0.06%,,,1.45kB / 0B,,,0B / 0B,,,1"
     val result = Stats(
       "ed4e5c72308a",
