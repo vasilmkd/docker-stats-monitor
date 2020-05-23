@@ -40,10 +40,8 @@ class DockerIntegrationSuite extends FunSuite {
     new ProcessBuilder()
       .command("docker", "stop", id)
 
-  private def stopContainer(id: String): IO[Unit] = {
-    println(id)
+  private def stopContainer(id: String): IO[Unit] =
     IO(dockerStop(id).start().waitFor()).void
-  }
 
   private def withContainer(blocker: Blocker): Resource[IO, String] =
     Resource.make(runContainer(blocker))(stopContainer)
