@@ -27,7 +27,7 @@ class ServiceSuite extends FunSuite {
           res  <- new Service[IO](blocker).routes.orNotFound.run(req)
           _    <- IO(assertEquals(res.status, Status.Ok))
           _    <- IO(assertEquals(res.httpVersion, HttpVersion.`HTTP/1.1`))
-          body <- res.body.through(text.utf8Decode).compile.string
+          body <- res.bodyAsText.compile.string
           fis   = IO(new FileInputStream(new File("static/html/index.html")))
           file <- readInputStream[IO](fis, 8192, blocker).through(text.utf8Decode).compile.string
         } yield assertEquals(body, file)
@@ -41,7 +41,7 @@ class ServiceSuite extends FunSuite {
       .use { blocker =>
         for {
           res  <- new Service[IO](blocker).routes.orNotFound.run(req)
-          body <- res.body.through(text.utf8Decode).compile.string
+          body <- res.bodyAsText.compile.string
         } yield assertEquals(body, "This is a WebSocket route.")
       }
       .unsafeRunSync()
