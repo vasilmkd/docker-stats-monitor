@@ -20,11 +20,11 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
     for {
       row    <- rowElement
       _      <- List(
-             nameCard(cd),
-             cpuCard(cd),
-             memCard(cd),
-             ioCard(cd)
-           ).traverse(_.flatMap(appendChild(row, _)))
+                  nameCard(cd),
+                  cpuCard(cd),
+                  memCard(cd),
+                  ioCard(cd)
+                ).traverse(_.flatMap(appendChild(row, _)))
       div     = document.createElement("div")
       _      <- Sync[F].delay(div.id = s"row-${cd.id}")
       _      <- appendChild(div, row)
@@ -73,56 +73,56 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
     for {
       card <- cardElement(2)
       _    <- List(
-             labelElement("Container name:"),
-             textElement(cd.name),
-             labelElement("Container id:"),
-             textElement(cd.id),
-             labelElement("Container image:"),
-             textElement(cd.image),
-             labelElement("Created:"),
-             textElement(cd.runningFor, Some(s"running-${cd.id}")),
-             labelElement("Status:"),
-             textElement(cd.status, Some(s"status-${cd.id}"))
-           ).traverse(_.flatMap(appendChild(card, _)))
+                labelElement("Container name:"),
+                textElement(cd.name),
+                labelElement("Container id:"),
+                textElement(cd.id),
+                labelElement("Container image:"),
+                textElement(cd.image),
+                labelElement("Created:"),
+                textElement(cd.runningFor, Some(s"running-${cd.id}")),
+                labelElement("Status:"),
+                textElement(cd.status, Some(s"status-${cd.id}"))
+              ).traverse(_.flatMap(appendChild(card, _)))
     } yield card
 
   private def cpuCard(cd: ContainerData): F[Element] =
     for {
       card <- cardElement(4)
       _    <- List(
-             labelElement("CPU usage:"),
-             textElement(s"${cd.cpuPercentage}%", Some(s"cpu-usage-${cd.id}")),
-             labelElement("CPU %"),
-             chartElement(s"cpu-${cd.id}")
-           ).traverse(_.flatMap(appendChild(card, _)))
+                labelElement("CPU usage:"),
+                textElement(s"${cd.cpuPercentage}%", Some(s"cpu-usage-${cd.id}")),
+                labelElement("CPU %"),
+                chartElement(s"cpu-${cd.id}")
+              ).traverse(_.flatMap(appendChild(card, _)))
     } yield card
 
   private def memCard(cd: ContainerData): F[Element] =
     for {
       card <- cardElement(4)
       _    <- List(
-             labelElement("Memory usage:"),
-             textElement(s"${cd.memUsage}%", Some(s"mem-usage-${cd.id}")),
-             labelElement("Memory %"),
-             chartElement(s"mem-${cd.id}")
-           ).traverse(_.flatMap(appendChild(card, _)))
+                labelElement("Memory usage:"),
+                textElement(s"${cd.memUsage}%", Some(s"mem-usage-${cd.id}")),
+                labelElement("Memory %"),
+                chartElement(s"mem-${cd.id}")
+              ).traverse(_.flatMap(appendChild(card, _)))
     } yield card
 
   private def ioCard(cd: ContainerData): F[Element] =
     for {
       card <- cardElement(2)
       _    <- List(
-             labelElement("Network I/O:"),
-             textElement(cd.netIO, Some(s"net-usage-${cd.id}")),
-             labelElement("Block I/O:"),
-             textElement(cd.blockIO, Some(s"block-usage-${cd.id}")),
-             labelElement("PIDs:"),
-             textElement(cd.pids.toString, Some(s"pids-${cd.id}")),
-             labelElement("Size:"),
-             textElement(cd.size, Some(s"size-${cd.id}")),
-             labelElement("Ports:"),
-             textElement(cd.ports, Some(s"ports-${cd.id}"))
-           ).traverse(_.flatMap(appendChild(card, _)))
+                labelElement("Network I/O:"),
+                textElement(cd.netIO, Some(s"net-usage-${cd.id}")),
+                labelElement("Block I/O:"),
+                textElement(cd.blockIO, Some(s"block-usage-${cd.id}")),
+                labelElement("PIDs:"),
+                textElement(cd.pids.toString, Some(s"pids-${cd.id}")),
+                labelElement("Size:"),
+                textElement(cd.size, Some(s"size-${cd.id}")),
+                labelElement("Ports:"),
+                textElement(cd.ports, Some(s"ports-${cd.id}"))
+              ).traverse(_.flatMap(appendChild(card, _)))
     } yield card
 
   private def cardElement(span: Int): F[Element] =
