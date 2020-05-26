@@ -23,8 +23,8 @@ object Processes {
     for {
       parts <- Applicative[F].pure(line.split(",,,"))
       _     <- MonadError[F, Throwable]
-             .raiseError(new IllegalStateException(s"Invalid docker ps data csv: $line"))
-             .whenA(parts.length < 6)
+                 .raiseError(new IllegalStateException(s"Invalid docker ps data csv: $line"))
+                 .whenA(parts.length < 6)
     } yield parts
 
   private def parseParts[F[_]: MonadError[*[_], Throwable]](parts: Array[String]): F[Processes] =
