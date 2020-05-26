@@ -12,7 +12,7 @@ Slim docker image (`FROM scratch`) containing only the application and docker bi
 Run with:
 
 ```
-docker run -d --name monitor --memory=64m --memory-swap=64m -p "8080:8080" -v /var/run/docker.sock:/var/run/docker.sock vasilvasilev97/docker-stats-monitor
+docker run -d --name monitor --memory=64m --memory-swap=64m -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.sock vasilvasilev97/docker-stats-monitor
 ```
 
 and visit [localhost:8080](http://localhost:8080/).
