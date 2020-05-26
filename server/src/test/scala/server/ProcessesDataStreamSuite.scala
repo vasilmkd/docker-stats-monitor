@@ -18,7 +18,8 @@ class ProcessesDataStreamSuite extends FunSuite {
     "",
     "8c2f7598fc14,,,cassandra:3.11.6,,,4 hours ago,,,7000-7001/tcp, 7199/tcp, 9042/tcp, 9160/tcp,,,Up 4 hours,,,893kB (virtual 379MB)",
     "",
-    "8d4ae1776df1,,,ubuntu,,,35 seconds ago,,,,,,Up 33 seconds,,,0B (virtual 64.2MB)"
+    "8d4ae1776df1,,,ubuntu,,,35 seconds ago,,,,,,Up 33 seconds,,,0B (virtual 64.2MB)",
+    "invalid,,,ubuntu,,,35 seconds ago,,,,,,Up 33 seconds,,,0B (virtual 64.2MB)"
   )
 
   private val expected =
@@ -29,6 +30,7 @@ class ProcessesDataStreamSuite extends FunSuite {
       .map(_.map(ps => (ps.id -> ps)).toMap)
       .toOption
       .get
+      .filter(_._2.id =!= "")
 
   private def inputStream[F[_]: Sync](s: String): F[InputStream] =
     Sync[F].delay(new ByteArrayInputStream(s.getBytes()))
