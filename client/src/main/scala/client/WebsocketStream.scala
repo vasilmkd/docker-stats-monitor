@@ -17,7 +17,9 @@ object WebsocketStream {
       .eval {
         for {
           queue <- Queue.unbounded[F, MessageEvent]
-          ws    <- Sync[F].delay(new WebSocket("ws://localhost:8080/ws"))
+          host  <- Sync[F].delay(window.location.host)
+          _     <- Sync[F].delay(println(host))
+          ws    <- Sync[F].delay(new WebSocket(s"ws://$host/ws"))
           _     <- Sync[F].delay(ws.onmessage = e => Effect[F].runAsync(queue.enqueue1(e))(_ => IO.unit).unsafeRunSync())
         } yield queue
       }
