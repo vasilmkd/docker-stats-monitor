@@ -1,5 +1,5 @@
 ThisBuild / name := "docker-stats-monitor"
-ThisBuild / version := "0.4.1"
+ThisBuild / version := "0.4.2"
 ThisBuild / scalaVersion := "2.13.2"
 
 val compilerOptions = Seq(

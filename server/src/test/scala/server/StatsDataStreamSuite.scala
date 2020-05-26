@@ -20,7 +20,8 @@ class StatsDataStreamSuite extends FunSuite {
     "",
     "74cf0440096b,,,friendly_johnson,,,65.30%,,,1.12GiB / 1.944GiB,,,57.59%,,,836B / 0B,,,0B / 0B,,,61",
     "",
-    "a651eaf37e82,,,sleepy_tereshkova,,,6.01%,,,1.112GiB / 1.944GiB,,,57.20%,,,766B / 0B,,,0B / 0B,,,61"
+    "a651eaf37e82,,,sleepy_tereshkova,,,6.01%,,,1.112GiB / 1.944GiB,,,57.20%,,,766B / 0B,,,0B / 0B,,,61",
+    "invalid,,,sleepy_tereshkova,,,6.01%,,,1.112GiB / 1.944GiB,,,57.20%,,,766B / 0B,,,0B / 0B,,,61"
   )
 
   private val expected =
@@ -31,6 +32,7 @@ class StatsDataStreamSuite extends FunSuite {
       .map(_.map(stats => (stats.id -> stats)).toMap)
       .toOption
       .get
+      .filter(_._2.id =!= "")
 
   private def inputStream[F[_]: Sync](s: String): F[InputStream] =
     Sync[F].delay(new ByteArrayInputStream(s.getBytes()))

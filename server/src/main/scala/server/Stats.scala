@@ -36,7 +36,7 @@ object Stats {
       val cpuPercentage = Try(parts(2).replace("%", "").toDouble).toOption.getOrElse(0.0)
       val memPercentage = Try(parts(4).replace("%", "").toDouble).toOption.getOrElse(0.0)
       Stats(
-        parts(0).substring(0, 12),
+        Try(parts(0).substring(0, 12)).toOption.getOrElse(""),
         parts(1),
         cpuPercentage,
         parts(3),
