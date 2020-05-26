@@ -13,6 +13,7 @@ object DockerProcesses {
     .command(
       "docker",
       "ps",
+      "-a",
       "--format",
       "table {{.ID}},,,{{.Image}},,,{{.RunningFor}},,,{{.Ports}},,,{{.Status}},,,{{.Size}}"
     )
