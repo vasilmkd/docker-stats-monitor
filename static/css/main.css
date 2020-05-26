@@ -3,7 +3,7 @@
 }
 
 :root {
-    --mdc-theme-primary: #0091e2;
+    --mdc-theme-primary: #065eac;
 }
 
 body {
@@ -11,6 +11,7 @@ body {
 }
 
 .label {
+    margin-top: 0;
     margin-bottom: 0;
 }
 
@@ -18,11 +19,38 @@ hr {
     margin-bottom: 16px;
 }
 
+.mdc-layout-grid {
+    max-width: 1440px;
+}
+
 .mdc-layout-grid__inner {
     margin-bottom: 16px;
 }
 
 .mdc-card {
+    padding-top: 16px;
     padding-left: 16px;
     padding-right: 16px;
+}
+
+.ct-chart {
+    margin-top: 16px;
+    height: 100%;
+}
+
+.button-div {
+    text-align: center;
+    padding: 8px;
+}
+
+.hidden {
+    display: none;
+}
+
+.ct-series-a .ct-line {
+    stroke: #00357c;
+}
+
+.ct-series-a .ct-area {
+    fill: #00357c;
 }

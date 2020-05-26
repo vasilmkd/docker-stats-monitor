@@ -13,6 +13,7 @@ object DockerStats {
     .command(
       "docker",
       "stats",
+      "-a",
       "--format",
       "table {{.ID}},,,{{.Name}},,,{{.CPUPerc}},,,{{.MemUsage}},,,{{.MemPerc}},,,{{.NetIO}},,,{{.BlockIO}},,,{{.PIDs}}",
       "--no-stream"

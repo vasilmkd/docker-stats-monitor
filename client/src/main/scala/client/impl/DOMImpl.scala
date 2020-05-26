@@ -16,22 +16,34 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
       _      <- removeChild(charts, child)
     } yield ()
 
-  override def onAdded(cd: ContainerData): F[Unit] =
+  override def onAdded(cd: ContainerData): F[Unit] = {
+    val running = cd.status.startsWith("Up")
     for {
-      row    <- rowElement
-      _      <- List(
-                  nameCard(cd),
-                  cpuCard(cd),
-                  memCard(cd),
-                  ioCard(cd)
-                ).traverse(_.flatMap(appendChild(row, _)))
-      div     = document.createElement("div")
-      _      <- Sync[F].delay(div.id = s"row-${cd.id}")
-      _      <- appendChild(div, row)
-      _      <- appendChild(div, document.createElement("hr"))
-      charts <- chartsElement
-      _      <- appendChild(charts, div)
+      nameRow  <- rowElement
+      _        <- Sync[F].delay(nameRow.classList.add("mdc-card"))
+      _        <- List(
+                    nameCardLabelElement(2, "Container name:", cd.name),
+                    nameCardLabelElement(2, "Container id:", cd.id),
+                    nameCardLabelElement(2, "Container image:", cd.image),
+                    nameCardLabelElement(2, "Created:", cd.runningFor, Some(s"running-${cd.id}")),
+                    nameCardLabelElement(2, "Status:", cd.status, Some(s"status-${cd.id}")),
+                    nameCardToggle(cd.id, running)
+                  ).traverse(_.flatMap(appendChild(nameRow, _)))
+      chartRow <- chartRowElement(cd.id, running)
+      _        <- List(
+                    cpuCard(cd),
+                    memCard(cd),
+                    ioCard(cd)
+                  ).traverse(_.flatMap(appendChild(chartRow, _)))
+      div       = document.createElement("div")
+      _        <- Sync[F].delay(div.id = s"row-${cd.id}")
+      _        <- appendChild(div, nameRow)
+      _        <- appendChild(div, chartRow)
+      _        <- appendChild(div, document.createElement("hr"))
+      charts   <- chartsElement
+      _        <- appendChild(charts, div)
     } yield ()
+  }
 
   override def onUpdated(cd: ContainerData): F[Unit] =
     for {
@@ -69,26 +81,16 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
       row
     }
 
-  private def nameCard(cd: ContainerData): F[Element] =
+  private def chartRowElement(id: String, running: Boolean): F[Element] =
     for {
-      card <- cardElement(2)
-      _    <- List(
-                labelElement("Container name:"),
-                textElement(cd.name),
-                labelElement("Container id:"),
-                textElement(cd.id),
-                labelElement("Container image:"),
-                textElement(cd.image),
-                labelElement("Created:"),
-                textElement(cd.runningFor, Some(s"running-${cd.id}")),
-                labelElement("Status:"),
-                textElement(cd.status, Some(s"status-${cd.id}"))
-              ).traverse(_.flatMap(appendChild(card, _)))
-    } yield card
+      row <- rowElement
+      _   <- Sync[F].delay(row.id = s"chart-row-$id")
+      _   <- Sync[F].delay(row.classList.add("hidden")).whenA(!running)
+    } yield row
 
   private def cpuCard(cd: ContainerData): F[Element] =
     for {
-      card <- cardElement(4)
+      card <- cardElement(5)
       _    <- List(
                 labelElement("CPU usage:"),
                 textElement(s"${cd.cpuPercentage}%", Some(s"cpu-usage-${cd.id}")),
@@ -99,7 +101,7 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
 
   private def memCard(cd: ContainerData): F[Element] =
     for {
-      card <- cardElement(4)
+      card <- cardElement(5)
       _    <- List(
                 labelElement("Memory usage:"),
                 textElement(s"${cd.memUsage}%", Some(s"mem-usage-${cd.id}")),
@@ -133,6 +135,49 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
       card
     }
 
+  private def nameCardLabelElement(span: Int, label: String, text: String, id: Option[String] = None): F[Element] =
+    for {
+      div <- Sync[F].delay {
+               val div = document.createElement("div")
+               div.classList.add(s"mdc-layout-grid__cell--span-$span")
+               div
+             }
+      _   <- List(
+               labelElement(label),
+               textElement(text, id)
+             ).traverse(_.flatMap(appendChild(div, _)))
+    } yield div
+
+  private def nameCardToggle(id: String, running: Boolean): F[Element] =
+    Sync[F].delay {
+      val div    = document.createElement("div")
+      div.classList.add("mdc-layout-grid__cell--span-2")
+      div.classList.add("button-div")
+      val button = document.createElement("button")
+      button.setAttribute("type", "button")
+      button.classList.add("mdc-button")
+      button.classList.add("mdc-button--raised")
+      val span   = document.createElement("span")
+      span.classList.add("mdc-button__label")
+      span.innerText = if (running) DOMImpl.hideStats else DOMImpl.showStats
+      button.addEventListener(
+        "click",
+        (_: Event) => {
+          val chartRow = document.getElementById(s"chart-row-$id")
+          if (span.innerText == DOMImpl.showStats) {
+            chartRow.classList.remove("hidden")
+            span.innerText = DOMImpl.hideStats
+          } else {
+            chartRow.classList.add("hidden")
+            span.innerText = DOMImpl.showStats
+          }
+        }
+      )
+      button.appendChild(span)
+      div.appendChild(button)
+      div
+    }
+
   private def labelElement(text: String): F[Element] =
     Sync[F].delay {
       val label = document.createElement("h5")
@@ -153,7 +198,6 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
     Sync[F].delay {
       val chart = document.createElement("div")
       chart.classList.add("ct-chart")
-      chart.classList.add("ct-perfect-fourth")
       chart.id = id
       chart
     }
@@ -161,4 +205,7 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
 
 object DOMImpl {
   def apply[F[_]: Sync]: DOM[F] = new DOMImpl[F]
+
+  private[impl] val showStats: String = "SHOW STATS"
+  private[impl] val hideStats: String = "HIDE STATS"
 }
