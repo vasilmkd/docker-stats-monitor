@@ -23,9 +23,9 @@ class StatsSuite extends FunSuite {
 
   test("less punishing parsing") {
     val line   =
-      "ed4e5c72308a-everythingelseistruncated,,,affectionate_shockley,,,--,,,1.148MiB / 1.944GiB,,,--,,,1.45kB / 0B,,,0B / 0B,,,--"
+      "short,,,affectionate_shockley,,,--,,,1.148MiB / 1.944GiB,,,--,,,1.45kB / 0B,,,0B / 0B,,,--"
     val result = Stats(
-      "ed4e5c72308a",
+      "",
       "affectionate_shockley",
       0.0,
       "1.148MiB / 1.944GiB",
