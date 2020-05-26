@@ -18,9 +18,10 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
 
   override def onAdded(cd: ContainerData): F[Unit] = {
     val running = cd.status.startsWith("Up")
+    val card    = document.createElement("div")
     for {
+      _        <- Sync[F].delay(card.classList.add("mdc-card"))
       nameRow  <- rowElement
-      _        <- Sync[F].delay(nameRow.classList.add("mdc-card"))
       _        <- List(
                     nameCardLabelElement(2, "Container name:", cd.name),
                     nameCardLabelElement(2, "Container id:", cd.id),
@@ -35,10 +36,11 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
                     memCard(cd),
                     ioCard(cd)
                   ).traverse(_.flatMap(appendChild(chartRow, _)))
+      _        <- appendChild(card, nameRow)
+      _        <- appendChild(card, chartRow)
       div       = document.createElement("div")
       _        <- Sync[F].delay(div.id = s"row-${cd.id}")
-      _        <- appendChild(div, nameRow)
-      _        <- appendChild(div, chartRow)
+      _        <- appendChild(div, card)
       _        <- appendChild(div, document.createElement("hr"))
       charts   <- chartsElement
       _        <- appendChild(charts, div)
@@ -131,7 +133,6 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
     Sync[F].delay {
       val card = document.createElement("div")
       card.classList.add(s"mdc-layout-grid__cell--span-$span")
-      card.classList.add("mdc-card")
       card
     }
 
