@@ -1,5 +1,7 @@
 package server
 
+import scala.util.Try
+
 import cats.{ Applicative, MonadError }
 import cats.implicits._
 
@@ -31,8 +33,8 @@ object Stats {
 
   private def parseParts[F[_]: MonadError[*[_], Throwable]](parts: Array[String]): F[Stats] =
     MonadError[F, Throwable].catchNonFatal {
-      val cpuPercentage = parts(2).replace("%", "").toDouble
-      val memPercentage = parts(4).replace("%", "").toDouble
+      val cpuPercentage = Try(parts(2).replace("%", "").toDouble).toOption.getOrElse(0.0)
+      val memPercentage = Try(parts(4).replace("%", "").toDouble).toOption.getOrElse(0.0)
       Stats(
         parts(0).substring(0, 12),
         parts(1),
@@ -41,7 +43,7 @@ object Stats {
         memPercentage,
         parts(5),
         parts(6),
-        parts(7).toInt
+        Try(parts(7).toInt).toOption.getOrElse(0)
       )
     }
 }
