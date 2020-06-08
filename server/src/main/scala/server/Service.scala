@@ -3,6 +3,7 @@ package server
 import java.io.File
 
 import cats.effect.{ Blocker, ContextShift, Sync, Timer }
+import cats.implicits._
 import fs2.{ Pipe, Stream }
 import fs2.concurrent.Topic
 import io.circe.generic.auto._
@@ -35,7 +36,7 @@ class Service[F[_]: Sync: ContextShift: Timer](blocker: Blocker, topic: Topic[F,
         val toClient: Stream[F, WebSocketFrame]       =
           topic
             .subscribe(1)
-            .map(s => WebSocketFrame.Text(s.asJson.toString))
+            .map(s => WebSocketFrame.Text(s.asJson.show))
         val fromClient: Pipe[F, WebSocketFrame, Unit] = _.as(())
         WebSocketBuilder[F].build(toClient, fromClient)
     }

@@ -55,7 +55,7 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
       _ <- updateText(s"mem-usage-${cd.id}", cd.memUsage)
       _ <- updateText(s"net-usage-${cd.id}", cd.netIO)
       _ <- updateText(s"block-usage-${cd.id}", cd.blockIO)
-      _ <- updateText(s"pids-${cd.id}", cd.pids.toString)
+      _ <- updateText(s"pids-${cd.id}", cd.pids.show)
       _ <- updateText(s"size-${cd.id}", cd.size)
     } yield ()
 
@@ -121,7 +121,7 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
                 labelElement("Block I/O:"),
                 textElement(cd.blockIO, Some(s"block-usage-${cd.id}")),
                 labelElement("PIDs:"),
-                textElement(cd.pids.toString, Some(s"pids-${cd.id}")),
+                textElement(cd.pids.show, Some(s"pids-${cd.id}")),
                 labelElement("Size:"),
                 textElement(cd.size, Some(s"size-${cd.id}")),
                 labelElement("Ports:"),
@@ -165,7 +165,7 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
         "click",
         (_: Event) => {
           val chartRow = document.getElementById(s"chart-row-$id")
-          if (span.innerText == DOMImpl.showStats) {
+          if (span.innerText === DOMImpl.showStats) {
             chartRow.classList.remove("hidden")
             span.innerText = DOMImpl.hideStats
           } else {
