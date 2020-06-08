@@ -1,5 +1,6 @@
 package client
 
+import cats.Show
 import cats.effect.{ ConcurrentEffect, Effect, IO, Sync }
 import cats.implicits._
 import fs2.Stream
@@ -23,9 +24,12 @@ object WebsocketStream {
         } yield queue
       }
       .flatMap(_.dequeue)
-      .map(_.data.toString)
+      .map(_.data.show)
       .evalMap(decodeDockerData[F])
 
   private def decodeDockerData[F[_]: Sync](json: String): F[DockerData] =
     Sync[F].fromEither(decode[DockerData](json))
+
+  implicit private val anyShow: Show[Any] =
+    Show.fromToString
 }
