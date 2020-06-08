@@ -1,0 +1,28 @@
+* {
+    font-family: 'Roboto', sans-serif;
+}
+
+:root {
+    --mdc-theme-primary: #0091e2;
+}
+
+body {
+    margin: 0;
+}
+
+.label {
+    margin-bottom: 0;
+}
+
+hr {
+    margin-bottom: 16px;
+}
+
+.mdc-layout-grid__inner {
+    margin-bottom: 16px;
+}
+
+.mdc-card {
+    padding-left: 16px;
+    padding-right: 16px;
+}
