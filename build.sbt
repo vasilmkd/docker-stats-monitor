@@ -54,8 +54,8 @@ lazy val root = (project in file("."))
   )
 
 lazy val shared = crossProject(JVMPlatform, JSPlatform)
-  .settings(scalacOptions ++= compilerOptions)
   .in(file("shared"))
+  .settings(scalacOptions ++= compilerOptions)
 
 lazy val server = (project in file("server"))
   .enablePlugins(GraalVMNativeImagePlugin)
