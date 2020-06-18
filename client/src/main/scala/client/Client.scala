@@ -28,22 +28,17 @@ class Client[F[_]: Sync: DOM: Charting] {
     }
 
   private def onData(state: ClientState[F], data: DockerData): F[(ClientState[F], Unit)] = {
-    val parts = state.partition(data)
-    for {
-      newState <- (for {
-                      _ <- parts.removed.unorderedTraverse(onRemoved)
-                      _ <- parts.added.unorderedTraverse(id => onAdded(data.find(_.id === id).get))
-                      _ <- parts.updated.unorderedTraverse(id => onUpdated(data.find(_.id === id).get))
-                    } yield ()).run(state)
-    } yield newState
+    val parts          = state.partition(data)
+    val transformation = for {
+      _ <- parts.removed.unorderedTraverse(onRemoved)
+      _ <- parts.added.unorderedTraverse(id => onAdded(data.find(_.id === id).get))
+      _ <- parts.updated.unorderedTraverse(id => onUpdated(data.find(_.id === id).get))
+    } yield ()
+    transformation.run(state)
   }
 
-  private def onRemoved(id: String): StateT[F, ClientState[F], Unit] =
-    StateT { state =>
-      for {
-        _ <- DOM[F].onRemoved(id)
-      } yield (state - id, ())
-    }
+  private def onRemoved(id: String): StateT[F, ClientState[F], Unit]      =
+    StateT(state => DOM[F].onRemoved(id).as(state - id -> ()))
 
   private def onAdded(cd: ContainerData): StateT[F, ClientState[F], Unit] =
     StateT { state =>
