@@ -29,13 +29,13 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
                     nameCardLabelElement(2, "Created:", cd.runningFor, Some(s"running-${cd.id}")),
                     nameCardLabelElement(2, "Status:", cd.status, Some(s"status-${cd.id}")),
                     nameCardToggle(cd.id, running)
-                  ).traverse(_.flatMap(appendChild(nameRow, _)))
+                  ).traverse_(_.flatMap(appendChild(nameRow, _)))
       chartRow <- chartRowElement(cd.id, running)
       _        <- List(
                     cpuCard(cd),
                     memCard(cd),
                     ioCard(cd)
-                  ).traverse(_.flatMap(appendChild(chartRow, _)))
+                  ).traverse_(_.flatMap(appendChild(chartRow, _)))
       _        <- appendChild(card, nameRow)
       _        <- appendChild(card, chartRow)
       div       = document.createElement("div")
@@ -98,7 +98,7 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
                 textElement(s"${cd.cpuPercentage}%", Some(s"cpu-usage-${cd.id}")),
                 labelElement("CPU %"),
                 chartElement(s"cpu-${cd.id}")
-              ).traverse(_.flatMap(appendChild(card, _)))
+              ).traverse_(_.flatMap(appendChild(card, _)))
     } yield card
 
   private def memCard(cd: ContainerData): F[Element] =
@@ -109,7 +109,7 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
                 textElement(s"${cd.memUsage}", Some(s"mem-usage-${cd.id}")),
                 labelElement("Memory %"),
                 chartElement(s"mem-${cd.id}")
-              ).traverse(_.flatMap(appendChild(card, _)))
+              ).traverse_(_.flatMap(appendChild(card, _)))
     } yield card
 
   private def ioCard(cd: ContainerData): F[Element] =
@@ -126,7 +126,7 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
                 textElement(cd.size, Some(s"size-${cd.id}")),
                 labelElement("Ports:"),
                 textElement(cd.ports, Some(s"ports-${cd.id}"))
-              ).traverse(_.flatMap(appendChild(card, _)))
+              ).traverse_(_.flatMap(appendChild(card, _)))
     } yield card
 
   private def cardElement(span: Int): F[Element] =
@@ -146,7 +146,7 @@ class DOMImpl[F[_]: Sync] extends DOM[F] {
       _   <- List(
                labelElement(label),
                textElement(text, id)
-             ).traverse(_.flatMap(appendChild(div, _)))
+             ).traverse_(_.flatMap(appendChild(div, _)))
     } yield div
 
   private def nameCardToggle(id: String, running: Boolean): F[Element] =
