@@ -53,14 +53,13 @@ class DockerIntegrationSuite extends FunSuite {
     } yield (blocker, id)
 
     blockerAndId
-      .use {
-        case (blocker, id) =>
-          DockerDataStream
-            .stream[IO](blocker)
-            .take(3)
-            .compile
-            .toList
-            .map(_.map(_.find(_.id === id).get))
+      .use { case (blocker, id) =>
+        DockerDataStream
+          .stream[IO](blocker)
+          .take(3)
+          .compile
+          .toList
+          .map(_.map(_.find(_.id === id).get))
       }
       .unsafeRunSync()
       .foreach { data =>

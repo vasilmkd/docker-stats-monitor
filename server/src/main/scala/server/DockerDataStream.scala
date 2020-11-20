@@ -19,32 +19,30 @@ object DockerDataStream {
     )
 
   private def combiner[F[_]]: Pipe[F, (StatsData, ProcessesData), DockerData] =
-    _.map {
-      case (statsData, processesData) =>
-        statsData
-          .map {
-            case (id, stats) =>
-              val processes                                                                    = processesData.get(id).getOrElse(Processes(id, "", "", "", "", ""))
-              val Stats(_, name, cpuPercentage, memUsage, memPercentage, netIO, blockIO, pids) = stats
-              val Processes(_, image, created, ports, status, size)                            = processes
-              val mappedPorts                                                                  = if (ports.isEmpty) "No mapped ports" else ports
-              ContainerData(
-                id,
-                name,
-                image,
-                created,
-                status,
-                cpuPercentage,
-                memUsage,
-                memPercentage,
-                netIO,
-                blockIO,
-                pids,
-                size,
-                mappedPorts
-              )
-          }
-          .toSet[ContainerData]
+    _.map { case (statsData, processesData) =>
+      statsData
+        .map { case (id, stats) =>
+          val processes                                                                    = processesData.get(id).getOrElse(Processes(id, "", "", "", "", ""))
+          val Stats(_, name, cpuPercentage, memUsage, memPercentage, netIO, blockIO, pids) = stats
+          val Processes(_, image, created, ports, status, size)                            = processes
+          val mappedPorts                                                                  = if (ports.isEmpty) "No mapped ports" else ports
+          ContainerData(
+            id,
+            name,
+            image,
+            created,
+            status,
+            cpuPercentage,
+            memUsage,
+            memPercentage,
+            netIO,
+            blockIO,
+            pids,
+            size,
+            mappedPorts
+          )
+        }
+        .toSet[ContainerData]
     }
 
   private def ticker[F[_]: Functor: Timer, A](stream: Stream[F, A]): Stream[F, A] =

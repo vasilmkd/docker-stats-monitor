@@ -32,7 +32,7 @@ class Service[F[_]: Sync: ContextShift: Timer](blocker: Blocker, topic: Topic[F,
           .fromFile(new File("static/html/index.html"), blocker, Some(request))
           .getOrElseF(NotFound())
 
-      case GET -> Root / "ws"    =>
+      case GET -> Root / "ws" =>
         val toClient: Stream[F, WebSocketFrame]       =
           topic
             .subscribe(1)
