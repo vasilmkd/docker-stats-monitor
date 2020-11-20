@@ -11,3 +11,4 @@ target
 metals.sbt
 client.js
 client.js.map
+.bsp
