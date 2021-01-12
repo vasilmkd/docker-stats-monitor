@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2.1.0
+      uses: actions/checkout@v2
     - name: Build Docker image
-      uses: docker/build-push-action@v1.1.0
+      uses: docker/build-push-action@v2
       with:
         repository: vasilvasilev97/docker-stats-monitor
         push: false
