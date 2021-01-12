@@ -4,6 +4,7 @@ target
 .classpath
 .project
 .settings
+.bsp
 .idea
 .vscode
 .bloop

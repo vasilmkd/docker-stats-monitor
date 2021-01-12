@@ -1,6 +1,5 @@
-ThisBuild / name := "docker-stats-monitor"
-ThisBuild / version := "0.5.3"
-ThisBuild / scalaVersion := "2.13.3"
+ThisBuild / version := "0.6.0"
+ThisBuild / scalaVersion := "2.13.4"
 
 val compilerOptions = Seq(
   "-deprecation",                  // Emit warning and location for usages of deprecated APIs.
@@ -57,14 +56,14 @@ lazy val server = (project in file("server"))
   .enablePlugins(GraalVMNativeImagePlugin)
   .settings(
     scalacOptions ++= compilerOptions,
-    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full),
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.1" cross CrossVersion.full),
     libraryDependencies ++= Seq(
-      "org.http4s"     %% "http4s-blaze-server" % "0.21.7",
-      "org.http4s"     %% "http4s-dsl"          % "0.21.7",
-      "org.http4s"     %% "http4s-circe"        % "0.21.7",
+      "org.http4s"     %% "http4s-blaze-server" % "0.21.15",
+      "org.http4s"     %% "http4s-dsl"          % "0.21.15",
+      "org.http4s"     %% "http4s-circe"        % "0.21.15",
       "io.circe"       %% "circe-generic"       % "0.13.0",
       "org.slf4j"       % "slf4j-simple"        % "1.7.30",
-      "org.scalameta" %%% "munit"               % "0.7.13" % Test
+      "org.scalameta" %%% "munit"               % "0.7.20" % Test
     ),
     testFrameworks += new TestFramework("munit.Framework"),
     graalVMNativeImageOptions ++= Seq(
@@ -97,7 +96,7 @@ lazy val client = (project in file("client"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     scalacOptions ++= compilerOptions.filterNot(_ == "-Ywarn-unused:params").filterNot(_ == "-Ywarn-unused:privates"),
-    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full),
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.1" cross CrossVersion.full),
     cleanFiles ++= Seq(
       (ThisBuild / baseDirectory).value / "static" / "js" / "client.js",
       (ThisBuild / baseDirectory).value / "static" / "js" / "client.js.map"
@@ -106,11 +105,11 @@ lazy val client = (project in file("client"))
     (Compile / fullOptJS / artifactPath) := (ThisBuild / baseDirectory).value / "static" / "js" / "client.js",
     libraryDependencies ++= Seq(
       "org.scala-js"  %%% "scalajs-dom"   % "1.1.0",
-      "org.typelevel" %%% "cats-effect"   % "2.2.0",
-      "co.fs2"        %%% "fs2-core"      % "2.4.4",
+      "org.typelevel" %%% "cats-effect"   % "2.3.1",
+      "co.fs2"        %%% "fs2-core"      % "2.5.0",
       "io.circe"      %%% "circe-generic" % "0.13.0",
       "io.circe"      %%% "circe-parser"  % "0.13.0",
-      "org.scalameta" %%% "munit"         % "0.7.13" % Test
+      "org.scalameta" %%% "munit"         % "0.7.20" % Test
     ),
     scalaJSUseMainModuleInitializer := true,
     testFrameworks += new TestFramework("munit.Framework"),
