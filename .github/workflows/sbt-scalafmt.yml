@@ -2,7 +2,7 @@ name: Check style
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   check_style:

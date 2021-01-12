@@ -2,7 +2,7 @@ name: Build Docker image
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   docker_build:
