@@ -71,6 +71,7 @@ lazy val server = (project in file("server"))
       "--no-server",
       "--no-fallback",
       "--static",
+      "--libc=musl",
       "--enable-http",
       "--enable-https",
       "--enable-all-security-services",
@@ -78,14 +79,13 @@ lazy val server = (project in file("server"))
       "--allow-incomplete-classpath",
       "-H:+ReportExceptionStackTraces",
       "-H:+ReportUnsupportedElementsAtRuntime",
-      "-H:+TraceClassInitialization",
       "-H:+PrintClassInitialization",
       "-H:+RemoveSaturatedTypeFlows",
+      "-H:ReflectionConfigurationFiles=/build/reflect-config.json",
       "-H:+StackTrace",
       "-H:+JNI",
       "-H:-SpawnIsolates",
       "-H:-UseServiceLoaderFeature",
-      "-H:UseMuslC=../../../bundle/",
       "--install-exit-handlers",
       "--initialize-at-build-time=scala.runtime.Statics$VM"
     )
