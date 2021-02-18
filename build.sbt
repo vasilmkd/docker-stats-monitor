@@ -106,7 +106,7 @@ lazy val client = (project in file("client"))
     libraryDependencies ++= Seq(
       "org.scala-js"  %%% "scalajs-dom"   % "1.1.0",
       "org.typelevel" %%% "cats-effect"   % "2.3.1",
-      "co.fs2"        %%% "fs2-core"      % "2.5.0",
+      "co.fs2"        %%% "fs2-core"      % "2.5.2",
       "io.circe"      %%% "circe-generic" % "0.13.0",
       "io.circe"      %%% "circe-parser"  % "0.13.0",
       "org.scalameta" %%% "munit"         % "0.7.21" % Test
