@@ -1,6 +1,6 @@
 package server
 
-import cats.effect.{ Blocker, IO, Resource }
+import cats.effect.{ IO, Resource }
 import cats.syntax.all._
 import fs2.io._
 import fs2.text
@@ -19,9 +19,9 @@ class DockerIntegrationSuite extends CatsEffectSuite {
       "vasilvasilev97/docker-stats-monitor"
     )
 
-  private def runContainer(blocker: Blocker): IO[String] = {
+  private val runContainer: IO[String] = {
     val fis = IO(dockerRun.start().getInputStream())
-    readInputStream(fis, 8192, blocker)
+    readInputStream(fis, 8192)
       .through(text.utf8Decode)
       .compile
       .string
@@ -35,37 +35,33 @@ class DockerIntegrationSuite extends CatsEffectSuite {
   private def stopContainer(id: String): IO[Unit] =
     IO(dockerStop(id).start().waitFor()).void
 
-  private val containerResource: Resource[IO, (Blocker, String)] =
-    for {
-      blocker <- Blocker[IO]
-      id      <- Resource.make(runContainer(blocker))(stopContainer)
-    } yield (blocker, id)
+  private val containerResource: Resource[IO, String] =
+    Resource.make(runContainer)(stopContainer)
 
   private val container = ResourceFixture(containerResource)
 
-  container.test("integration") {
-    case (blocker, id) =>
-      DockerDataStream
-        .stream[IO](blocker)
-        .take(3)
-        .compile
-        .toList
-        .map(_.map(_.find(_.id === id).get))
-        .map {
-          _.foreach { data =>
-            assert(data.name.nonEmpty)
-            assertEquals(data.image, "vasilvasilev97/docker-stats-monitor")
-            assert(data.runningFor.nonEmpty)
-            assert(data.status.nonEmpty)
-            assert(data.cpuPercentage >= 0)
-            assert(data.memUsage.nonEmpty)
-            assert(data.memPercentage >= 0)
-            assert(data.netIO.nonEmpty)
-            assert(data.blockIO.nonEmpty)
-            assert(data.pids >= 0)
-            assert(data.size.nonEmpty)
-            assert(data.ports.nonEmpty)
-          }
+  container.test("integration") { id =>
+    DockerDataStream
+      .stream[IO]
+      .take(3)
+      .compile
+      .toList
+      .map(_.map(_.find(_.id === id).get))
+      .map {
+        _.foreach { data =>
+          assert(data.name.nonEmpty)
+          assertEquals(data.image, "vasilvasilev97/docker-stats-monitor")
+          assert(data.runningFor.nonEmpty)
+          assert(data.status.nonEmpty)
+          assert(data.cpuPercentage >= 0)
+          assert(data.memUsage.nonEmpty)
+          assert(data.memPercentage >= 0)
+          assert(data.netIO.nonEmpty)
+          assert(data.blockIO.nonEmpty)
+          assert(data.pids >= 0)
+          assert(data.size.nonEmpty)
+          assert(data.ports.nonEmpty)
         }
+      }
   }
 }

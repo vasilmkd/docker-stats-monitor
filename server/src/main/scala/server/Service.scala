@@ -2,7 +2,7 @@ package server
 
 import java.io.File
 
-import cats.effect.{ Blocker, ContextShift, Sync, Timer }
+import cats.effect.Async
 import cats.syntax.all._
 import fs2.{ Pipe, Stream }
 import fs2.concurrent.Topic
@@ -17,7 +17,7 @@ import org.http4s.websocket.WebSocketFrame
 
 import model._
 
-class Service[F[_]: Sync: ContextShift: Timer](blocker: Blocker, topic: Topic[F, DockerData]) extends Http4sDsl[F] {
+class Service[F[_]: Async](topic: Topic[F, DockerData]) extends Http4sDsl[F] {
 
   val routes: HttpRoutes[F] =
     Router(
@@ -29,7 +29,7 @@ class Service[F[_]: Sync: ContextShift: Timer](blocker: Blocker, topic: Topic[F,
     HttpRoutes.of[F] {
       case request @ GET -> Root =>
         StaticFile
-          .fromFile(new File("static/html/index.html"), blocker, Some(request))
+          .fromFile(new File("static/html/index.html"), Some(request))
           .getOrElseF(NotFound())
 
       case GET -> Root / "ws"    =>
@@ -42,5 +42,5 @@ class Service[F[_]: Sync: ContextShift: Timer](blocker: Blocker, topic: Topic[F,
     }
 
   private lazy val staticFiles: HttpRoutes[F] =
-    fileService(FileService.Config("static", blocker))
+    fileService(FileService.Config("static"))
 }
