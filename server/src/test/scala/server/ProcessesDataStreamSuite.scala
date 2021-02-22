@@ -2,16 +2,11 @@ package server
 
 import java.io.{ ByteArrayInputStream, InputStream }
 
-import scala.concurrent.ExecutionContext
+import cats.effect.{ Blocker, IO, Sync }
+import cats.syntax.all._
+import munit.CatsEffectSuite
 
-import cats.effect.{ Blocker, ContextShift, IO, Sync }
-import cats.implicits._
-import munit.FunSuite
-
-class ProcessesDataStreamSuite extends FunSuite {
-
-  implicit private val contextShift: ContextShift[IO] =
-    IO.contextShift(ExecutionContext.global)
+class ProcessesDataStreamSuite extends CatsEffectSuite {
 
   private val lines = List(
     "first line contains column names but is discarded regardless",
@@ -35,16 +30,17 @@ class ProcessesDataStreamSuite extends FunSuite {
   private def inputStream[F[_]: Sync](s: String): F[InputStream] =
     Sync[F].delay(new ByteArrayInputStream(s.getBytes()))
 
-  test("processes data stream") {
-    val test = Blocker[IO].use { blocker =>
-      ProcessesDataStream.stream(inputStream[IO](lines.mkString("\n")), blocker).compile.lastOrError
-    }
-    assertEquals(test.unsafeRunSync(), expected)
+  private val blocker = ResourceFixture(Blocker[IO])
+
+  blocker.test("processes data stream") { blocker =>
+    ProcessesDataStream
+      .stream(inputStream[IO](lines.mkString("\n")), blocker)
+      .compile
+      .lastOrError
+      .assertEquals(expected)
   }
 
-  test("invalid data") {
-    val test =
-      Blocker[IO].use(blocker => ProcessesDataStream.stream(inputStream[IO](",\n,"), blocker).compile.drain).attempt
-    assert(test.unsafeRunSync().isLeft)
+  blocker.test("invalid data") { blocker =>
+    ProcessesDataStream.stream(inputStream[IO](",\n,"), blocker).compile.drain.attempt.map(_.isLeft).assert
   }
 }

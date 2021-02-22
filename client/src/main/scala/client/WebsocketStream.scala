@@ -2,7 +2,7 @@ package client
 
 import cats.Show
 import cats.effect.{ ConcurrentEffect, Effect, IO, Sync }
-import cats.implicits._
+import cats.syntax.all._
 import fs2.Stream
 import fs2.concurrent.Queue
 import io.circe.generic.auto._

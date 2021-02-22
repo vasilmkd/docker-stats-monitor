@@ -1,7 +1,7 @@
 package client.impl
 
 import cats.effect.Sync
-import cats.implicits._
+import cats.syntax.all._
 import org.scalajs.dom._
 
 import client.DOM

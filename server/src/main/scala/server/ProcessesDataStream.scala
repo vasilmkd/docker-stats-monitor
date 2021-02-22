@@ -3,7 +3,7 @@ package server
 import java.io.InputStream
 
 import cats.effect.{ Blocker, ContextShift, Sync }
-import cats.implicits._
+import cats.syntax.all._
 import fs2.Stream
 
 object ProcessesDataStream {

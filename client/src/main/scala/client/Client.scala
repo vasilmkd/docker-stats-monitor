@@ -3,7 +3,7 @@ package client
 import cats.{ Applicative, CommutativeApplicative }
 import cats.data.StateT
 import cats.effect.Sync
-import cats.implicits._
+import cats.syntax.all._
 import fs2.Pipe
 
 import chartist._

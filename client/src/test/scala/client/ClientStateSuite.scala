@@ -1,6 +1,5 @@
 package client
 
-import cats.implicits._
 import munit.FunSuite
 
 import model._
