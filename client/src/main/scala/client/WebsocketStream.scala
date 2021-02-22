@@ -1,10 +1,10 @@
 package client
 
 import cats.Show
-import cats.effect.{ ConcurrentEffect, Effect, IO, Sync }
+import cats.effect.{ Async, Sync }
+import cats.effect.std.{ Dispatcher, Queue }
 import cats.syntax.all._
 import fs2.Stream
-import fs2.concurrent.Queue
 import io.circe.generic.auto._
 import io.circe.parser._
 import org.scalajs.dom._
@@ -13,17 +13,18 @@ import model._
 
 object WebsocketStream {
 
-  def stream[F[_]: ConcurrentEffect]: Stream[F, DockerData] =
+  def stream[F[_]: Async]: Stream[F, DockerData] =
     Stream
-      .eval {
+      .resource(Dispatcher[F])
+      .evalMap { dispatcher =>
         for {
           queue <- Queue.circularBuffer[F, MessageEvent](1)
           host  <- Sync[F].delay(window.location.host)
           ws    <- Sync[F].delay(new WebSocket(s"ws://$host/ws"))
-          _     <- Sync[F].delay(ws.onmessage = e => Effect[F].runAsync(queue.enqueue1(e))(_ => IO.unit).unsafeRunSync())
+          _     <- Sync[F].delay(ws.onmessage = e => dispatcher.unsafeRunAndForget(queue.offer(e)))
         } yield queue
       }
-      .flatMap(_.dequeue)
+      .flatMap(q => Stream.repeatEval(q.take))
       .map(_.data.show)
       .evalMap(decodeDockerData[F])
 

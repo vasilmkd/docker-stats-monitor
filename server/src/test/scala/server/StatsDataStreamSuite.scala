@@ -2,7 +2,7 @@ package server
 
 import java.io.{ ByteArrayInputStream, InputStream }
 
-import cats.effect.{ Blocker, IO, Sync }
+import cats.effect.{ IO, Sync }
 import cats.syntax.all._
 import munit.CatsEffectSuite
 
@@ -32,13 +32,11 @@ class StatsDataStreamSuite extends CatsEffectSuite {
   private def inputStream[F[_]: Sync](s: String): F[InputStream] =
     Sync[F].delay(new ByteArrayInputStream(s.getBytes()))
 
-  private val blocker = ResourceFixture(Blocker[IO])
-
-  blocker.test("stats data stream") { blocker =>
-    StatsDataStream.stream(inputStream[IO](lines.mkString("\n")), blocker).compile.lastOrError.assertEquals(expected)
+  test("stats data stream") {
+    StatsDataStream.stream(inputStream[IO](lines.mkString("\n"))).compile.lastOrError.assertEquals(expected)
   }
 
-  blocker.test("invalid data") { blocker =>
-    StatsDataStream.stream(inputStream[IO](",\n,"), blocker).compile.drain.attempt.map(_.isLeft).assert
+  test("invalid data") {
+    StatsDataStream.stream(inputStream[IO](",\n,")).compile.drain.attempt.map(_.isLeft).assert
   }
 }

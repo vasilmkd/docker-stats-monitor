@@ -25,12 +25,12 @@ class ClientStateSuite extends FunSuite {
 
   test("get present") {
     val state = ClientState(Map("974a307336dc" -> chartState))
-    assert(state.get("974a307336dc").isRight)
+    assert(state.get("974a307336dc").isDefined)
   }
 
   test("get not present") {
     val state = ClientState(Map("974a307336dc" -> chartState))
-    assert(state.get("blah").isLeft)
+    assert(state.get("blah").isEmpty)
   }
 
   test("partition") {

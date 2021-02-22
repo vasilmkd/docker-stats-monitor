@@ -58,13 +58,13 @@ lazy val server = (project in file("server"))
     scalacOptions ++= compilerOptions,
     addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full),
     libraryDependencies ++= Seq(
-      "org.http4s"     %% "http4s-blaze-server" % "0.21.19",
-      "org.http4s"     %% "http4s-dsl"          % "0.21.19",
-      "org.http4s"     %% "http4s-circe"        % "0.21.19",
+      "org.http4s"     %% "http4s-blaze-server" % "1.0.0-M16",
+      "org.http4s"     %% "http4s-dsl"          % "1.0.0-M16",
+      "org.http4s"     %% "http4s-circe"        % "1.0.0-M16",
       "io.circe"       %% "circe-generic"       % "0.13.0",
       "org.slf4j"       % "slf4j-simple"        % "1.7.30",
       "org.scalameta" %%% "munit"               % "0.7.22" % Test,
-      "org.typelevel" %%% "munit-cats-effect-2" % "0.13.1" % Test
+      "org.typelevel" %%% "munit-cats-effect-3" % "0.13.1" % Test
     ),
     testFrameworks += new TestFramework("munit.Framework"),
     graalVMNativeImageOptions ++= Seq(
@@ -106,12 +106,12 @@ lazy val client = (project in file("client"))
     (Compile / fullOptJS / artifactPath) := (ThisBuild / baseDirectory).value / "static" / "js" / "client.js",
     libraryDependencies ++= Seq(
       "org.scala-js"  %%% "scalajs-dom"         % "1.1.0",
-      "org.typelevel" %%% "cats-effect"         % "2.3.3",
-      "co.fs2"        %%% "fs2-core"            % "2.5.3",
+      "org.typelevel" %%% "cats-effect"         % "3.0.0-RC2",
+      "co.fs2"        %%% "fs2-core"            % "3.0.0-M8",
       "io.circe"      %%% "circe-generic"       % "0.13.0",
       "io.circe"      %%% "circe-parser"        % "0.13.0",
       "org.scalameta" %%% "munit"               % "0.7.22" % Test,
-      "org.typelevel" %%% "munit-cats-effect-2" % "0.13.1" % Test
+      "org.typelevel" %%% "munit-cats-effect-3" % "0.13.1" % Test
     ),
     scalaJSUseMainModuleInitializer := true,
     testFrameworks += new TestFramework("munit.Framework"),

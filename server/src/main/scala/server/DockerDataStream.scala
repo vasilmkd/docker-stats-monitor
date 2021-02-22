@@ -2,19 +2,18 @@ package server
 
 import scala.concurrent.duration._
 
-import cats.Functor
-import cats.effect.{ Blocker, ContextShift, Sync, Timer }
+import cats.effect.{ Sync, Temporal }
 import fs2.{ Pipe, Stream }
 
 import model._
 
 object DockerDataStream {
 
-  def stream[F[_]: Sync: ContextShift: Timer](blocker: Blocker): Stream[F, DockerData] =
+  def stream[F[_]: Sync: Temporal]: Stream[F, DockerData] =
     ticker(
       StatsDataStream
-        .stream[F](DockerStats.input, blocker)
-        .zip(ProcessesDataStream.stream[F](DockerProcesses.input, blocker))
+        .stream[F](DockerStats.input)
+        .zip(ProcessesDataStream.stream[F](DockerProcesses.input))
         .through(combiner)
     )
 
@@ -47,7 +46,7 @@ object DockerDataStream {
           .toSet[ContainerData]
     }
 
-  private def ticker[F[_]: Functor: Timer, A](stream: Stream[F, A]): Stream[F, A] =
+  private def ticker[F[_]: Temporal, A](stream: Stream[F, A]): Stream[F, A] =
     (Stream.emit(Duration.Zero) ++ Stream.awakeEvery[F](5.seconds))
       .as(stream)
       .flatten

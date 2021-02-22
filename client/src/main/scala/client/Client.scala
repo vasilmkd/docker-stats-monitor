@@ -60,7 +60,8 @@ class Client[F[_]: Sync: DOM: Charting] {
   private def onUpdated(cd: ContainerData): StateT[F, ClientState[F], Unit] =
     StateT { state =>
       for {
-        cs <- state.get(cd.id)
+        cs <-
+          Sync[F].fromOption(state.get(cd.id), new IllegalStateException(s"Container data with id ${cd.id} not found"))
         _  <- cs.cpuChart.update(cd.cpuPercentage)
         _  <- cs.memChart.update(cd.memPercentage)
         _  <- DOM[F].onUpdated(cd)
