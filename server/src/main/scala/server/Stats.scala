@@ -3,7 +3,7 @@ package server
 import scala.util.Try
 
 import cats.{ Applicative, MonadError }
-import cats.implicits._
+import cats.syntax.all._
 
 final case class Stats(
   id: String,

@@ -1,20 +1,12 @@
 package server
 
-import scala.concurrent.ExecutionContext
-
-import cats.effect.{ Blocker, ContextShift, IO, Resource, Timer }
-import cats.implicits._
+import cats.effect.{ Blocker, IO, Resource }
+import cats.syntax.all._
 import fs2.io._
 import fs2.text
-import munit.FunSuite
+import munit.CatsEffectSuite
 
-class DockerIntegrationSuite extends FunSuite {
-
-  implicit private val contextShift: ContextShift[IO] =
-    IO.contextShift(ExecutionContext.global)
-
-  implicit private val timer: Timer[IO] =
-    IO.timer(ExecutionContext.global)
+class DockerIntegrationSuite extends CatsEffectSuite {
 
   private val dockerRun = new ProcessBuilder()
     .command(
@@ -43,39 +35,37 @@ class DockerIntegrationSuite extends FunSuite {
   private def stopContainer(id: String): IO[Unit] =
     IO(dockerStop(id).start().waitFor()).void
 
-  private def withContainer(blocker: Blocker): Resource[IO, String] =
-    Resource.make(runContainer(blocker))(stopContainer)
-
-  test("integration") {
-    val blockerAndId = for {
+  private val containerResource: Resource[IO, (Blocker, String)] =
+    for {
       blocker <- Blocker[IO]
-      id      <- withContainer(blocker)
+      id      <- Resource.make(runContainer(blocker))(stopContainer)
     } yield (blocker, id)
 
-    blockerAndId
-      .use {
-        case (blocker, id) =>
-          DockerDataStream
-            .stream[IO](blocker)
-            .take(3)
-            .compile
-            .toList
-            .map(_.map(_.find(_.id === id).get))
-      }
-      .unsafeRunSync()
-      .foreach { data =>
-        assert(data.name.nonEmpty)
-        assertEquals(data.image, "vasilvasilev97/docker-stats-monitor")
-        assert(data.runningFor.nonEmpty)
-        assert(data.status.nonEmpty)
-        assert(data.cpuPercentage >= 0)
-        assert(data.memUsage.nonEmpty)
-        assert(data.memPercentage >= 0)
-        assert(data.netIO.nonEmpty)
-        assert(data.blockIO.nonEmpty)
-        assert(data.pids >= 0)
-        assert(data.size.nonEmpty)
-        assert(data.ports.nonEmpty)
-      }
+  private val container = ResourceFixture(containerResource)
+
+  container.test("integration") {
+    case (blocker, id) =>
+      DockerDataStream
+        .stream[IO](blocker)
+        .take(3)
+        .compile
+        .toList
+        .map(_.map(_.find(_.id === id).get))
+        .map {
+          _.foreach { data =>
+            assert(data.name.nonEmpty)
+            assertEquals(data.image, "vasilvasilev97/docker-stats-monitor")
+            assert(data.runningFor.nonEmpty)
+            assert(data.status.nonEmpty)
+            assert(data.cpuPercentage >= 0)
+            assert(data.memUsage.nonEmpty)
+            assert(data.memPercentage >= 0)
+            assert(data.netIO.nonEmpty)
+            assert(data.blockIO.nonEmpty)
+            assert(data.pids >= 0)
+            assert(data.size.nonEmpty)
+            assert(data.ports.nonEmpty)
+          }
+        }
   }
 }

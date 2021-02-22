@@ -2,11 +2,11 @@ package client
 
 import cats.effect.IO
 import fs2.Stream
-import munit.FunSuite
+import munit.CatsEffectSuite
 
 import model._
 
-class ClientSuite extends FunSuite {
+class ClientSuite extends CatsEffectSuite {
 
   implicit private val ioTestDOM = TestDOM[IO]
 
@@ -90,8 +90,7 @@ class ClientSuite extends FunSuite {
       .through(new Client[IO].run)
       .compile
       .toList
-      .unsafeRunSync()
-      .map(_.map.keySet)
+      .map(_.map(_.map.keySet))
 
     val expected = List(
       Set.empty[String],
@@ -101,6 +100,6 @@ class ClientSuite extends FunSuite {
       Set.empty[String]
     )
 
-    assertEquals(states, expected)
+    states.assertEquals(expected)
   }
 }

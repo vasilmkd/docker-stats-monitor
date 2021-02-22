@@ -3,7 +3,7 @@ package server
 import java.io.File
 
 import cats.effect.{ Blocker, ContextShift, Sync, Timer }
-import cats.implicits._
+import cats.syntax.all._
 import fs2.{ Pipe, Stream }
 import fs2.concurrent.Topic
 import io.circe.generic.auto._

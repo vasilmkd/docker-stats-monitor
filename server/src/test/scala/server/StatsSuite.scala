@@ -1,6 +1,5 @@
 package server
 
-import cats.implicits._
 import munit.FunSuite
 
 class StatsSuite extends FunSuite {
