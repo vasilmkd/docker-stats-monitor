@@ -1,5 +1,5 @@
 ThisBuild / version := "0.6.0"
-ThisBuild / scalaVersion := "2.13.4"
+ThisBuild / scalaVersion := "2.13.5"
 
 val compilerOptions = Seq(
   "-deprecation",                  // Emit warning and location for usages of deprecated APIs.

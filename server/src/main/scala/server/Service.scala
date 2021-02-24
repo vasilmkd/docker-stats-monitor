@@ -2,7 +2,7 @@ package server
 
 import java.io.File
 
-import cats.effect.{ Blocker, ContextShift, Sync, Timer }
+import cats.effect.{ Blocker, ContextShift, Sync }
 import cats.syntax.all._
 import fs2.{ Pipe, Stream }
 import fs2.concurrent.Topic
@@ -17,7 +17,7 @@ import org.http4s.websocket.WebSocketFrame
 
 import model._
 
-class Service[F[_]: Sync: ContextShift: Timer](blocker: Blocker, topic: Topic[F, DockerData]) extends Http4sDsl[F] {
+class Service[F[_]: Sync: ContextShift](blocker: Blocker, topic: Topic[F, DockerData]) extends Http4sDsl[F] {
 
   val routes: HttpRoutes[F] =
     Router(
