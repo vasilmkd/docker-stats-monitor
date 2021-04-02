@@ -105,7 +105,7 @@ lazy val client = (project in file("client"))
     (Compile / fullOptJS / artifactPath) := (ThisBuild / baseDirectory).value / "static" / "js" / "client.js",
     libraryDependencies ++= Seq(
       "org.scala-js"  %%% "scalajs-dom"         % "1.1.0",
-      "co.fs2"        %%% "fs2-core"            % "2.5.4",
+      "co.fs2"        %%% "fs2-core"            % "3.0.1",
       "io.circe"      %%% "circe-generic"       % "0.13.0",
       "io.circe"      %%% "circe-parser"        % "0.13.0",
       "org.typelevel" %%% "munit-cats-effect-2" % "1.0.1" % Test
