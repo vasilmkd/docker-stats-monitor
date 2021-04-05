@@ -65,7 +65,6 @@ lazy val server = (project in file("server"))
       "org.slf4j"      % "slf4j-simple"        % "1.7.30",
       "org.typelevel" %% "munit-cats-effect-2" % "1.0.1" % Test
     ),
-    testFrameworks += new TestFramework("munit.Framework"),
     graalVMNativeImageOptions ++= Seq(
       "--verbose",
       "--no-server",
@@ -111,7 +110,6 @@ lazy val client = (project in file("client"))
       "org.typelevel" %%% "munit-cats-effect-2" % "1.0.1" % Test
     ),
     scalaJSUseMainModuleInitializer := true,
-    testFrameworks += new TestFramework("munit.Framework"),
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
   )
   .dependsOn(shared.js)
