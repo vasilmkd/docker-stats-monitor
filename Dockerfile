@@ -4,7 +4,7 @@ FROM ghcr.io/graalvm/graalvm-ce:java11-21.1.0 as builder
 RUN gu install native-image
 
 # Install sbt
-RUN curl https://bintray.com/sbt/rpm/rpm | tee /etc/yum.repos.d/bintray-sbt-rpm.repo && \
+RUN curl -L https://www.scala-sbt.org/sbt-rpm.repo > /etc/yum.repos.d/sbt-rpm.repo && \
     microdnf install -y sbt
 
 # Static image requirements
