@@ -63,7 +63,7 @@ lazy val server = (project in file("server"))
       "org.http4s"    %% "http4s-circe"        % "0.21.23",
       "io.circe"      %% "circe-generic"       % "0.13.0",
       "org.slf4j"      % "slf4j-simple"        % "1.7.31",
-      "org.typelevel" %% "munit-cats-effect-2" % "1.0.3" % Test
+      "org.typelevel" %% "munit-cats-effect-2" % "1.0.5" % Test
     ),
     graalVMNativeImageOptions ++= Seq(
       "--verbose",
