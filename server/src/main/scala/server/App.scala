@@ -5,7 +5,7 @@ import scala.concurrent.ExecutionContext
 import cats.effect.{ Blocker, ExitCode, IO, IOApp }
 import fs2.concurrent.Topic
 import org.http4s.implicits._
-import org.http4s.server.blaze.BlazeServerBuilder
+import org.http4s.blaze.server.BlazeServerBuilder
 
 import model._
 
