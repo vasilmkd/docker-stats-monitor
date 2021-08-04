@@ -58,11 +58,11 @@ lazy val server = (project in file("server"))
     scalacOptions ++= compilerOptions,
     addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.0" cross CrossVersion.full),
     libraryDependencies ++= Seq(
-      "org.http4s"    %% "http4s-blaze-server" % "0.21.24",
-      "org.http4s"    %% "http4s-dsl"          % "0.21.24",
-      "org.http4s"    %% "http4s-circe"        % "0.21.24",
-      "io.circe"      %% "circe-generic"       % "0.13.0",
-      "org.slf4j"      % "slf4j-simple"        % "1.7.31",
+      "org.http4s"    %% "http4s-blaze-server" % "0.22.1",
+      "org.http4s"    %% "http4s-dsl"          % "0.22.1",
+      "org.http4s"    %% "http4s-circe"        % "0.22.1",
+      "io.circe"      %% "circe-generic"       % "0.14.1",
+      "org.slf4j"      % "slf4j-simple"        % "1.7.32",
       "org.typelevel" %% "munit-cats-effect-2" % "1.0.5" % Test
     ),
     graalVMNativeImageOptions ++= Seq(
@@ -104,9 +104,9 @@ lazy val client = (project in file("client"))
     (Compile / fullOptJS / artifactPath) := (ThisBuild / baseDirectory).value / "static" / "js" / "client.js",
     libraryDependencies ++= Seq(
       "org.scala-js"  %%% "scalajs-dom"         % "1.1.0",
-      "co.fs2"        %%% "fs2-core"            % "2.5.7",
-      "io.circe"      %%% "circe-generic"       % "0.13.0",
-      "io.circe"      %%% "circe-parser"        % "0.13.0",
+      "co.fs2"        %%% "fs2-core"            % "2.5.9",
+      "io.circe"      %%% "circe-generic"       % "0.14.1",
+      "io.circe"      %%% "circe-parser"        % "0.14.1",
       "org.typelevel" %%% "munit-cats-effect-2" % "1.0.5" % Test
     ),
     scalaJSUseMainModuleInitializer := true,
