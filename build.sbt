@@ -63,7 +63,7 @@ lazy val server = (project in file("server"))
       "org.http4s"    %% "http4s-circe"        % "0.22.2",
       "io.circe"      %% "circe-generic"       % "0.14.1",
       "org.slf4j"      % "slf4j-simple"        % "1.7.32",
-      "org.typelevel" %% "munit-cats-effect-2" % "1.0.5" % Test
+      "org.typelevel" %% "munit-cats-effect-2" % "1.0.6" % Test
     ),
     graalVMNativeImageOptions ++= Seq(
       "--verbose",
@@ -107,7 +107,7 @@ lazy val client = (project in file("client"))
       "co.fs2"        %%% "fs2-core"            % "2.5.9",
       "io.circe"      %%% "circe-generic"       % "0.14.1",
       "io.circe"      %%% "circe-parser"        % "0.14.1",
-      "org.typelevel" %%% "munit-cats-effect-2" % "1.0.5" % Test
+      "org.typelevel" %%% "munit-cats-effect-2" % "1.0.6" % Test
     ),
     scalaJSUseMainModuleInitializer := true,
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
