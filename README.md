@@ -25,7 +25,7 @@ To run with `docker-compose`:
 docker-stats:
   image: vasilvasilev97/docker-stats-monitor
   restart: always
-  mem_limit: 64MB
+  mem_limit: 64m
   volumes:
     - /var/run/docker.sock:/var/run/docker.sock:ro
   ports:
