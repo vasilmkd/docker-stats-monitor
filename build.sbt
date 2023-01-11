@@ -58,9 +58,9 @@ lazy val server = (project in file("server"))
     scalacOptions ++= compilerOptions,
     addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full),
     libraryDependencies ++= Seq(
-      "org.http4s"    %% "http4s-blaze-server" % "0.22.2",
-      "org.http4s"    %% "http4s-dsl"          % "0.22.2",
-      "org.http4s"    %% "http4s-circe"        % "0.22.2",
+      "org.http4s"    %% "http4s-blaze-server" % "0.22.15",
+      "org.http4s"    %% "http4s-dsl"          % "0.22.15",
+      "org.http4s"    %% "http4s-circe"        % "0.22.15",
       "io.circe"      %% "circe-generic"       % "0.14.1",
       "org.slf4j"      % "slf4j-simple"        % "1.7.33",
       "org.typelevel" %% "munit-cats-effect-2" % "1.0.7" % Test
