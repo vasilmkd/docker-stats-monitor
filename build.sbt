@@ -61,7 +61,7 @@ lazy val server = (project in file("server"))
       "org.http4s"    %% "http4s-blaze-server" % "0.22.2",
       "org.http4s"    %% "http4s-dsl"          % "0.22.2",
       "org.http4s"    %% "http4s-circe"        % "0.22.2",
-      "io.circe"      %% "circe-generic"       % "0.14.1",
+      "io.circe"      %% "circe-generic"       % "0.14.5",
       "org.slf4j"      % "slf4j-simple"        % "1.7.33",
       "org.typelevel" %% "munit-cats-effect-2" % "1.0.7" % Test
     ),
@@ -105,8 +105,8 @@ lazy val client = (project in file("client"))
     libraryDependencies ++= Seq(
       "org.scala-js"  %%% "scalajs-dom"         % "1.2.0",
       "co.fs2"        %%% "fs2-core"            % "2.5.9",
-      "io.circe"      %%% "circe-generic"       % "0.14.1",
-      "io.circe"      %%% "circe-parser"        % "0.14.1",
+      "io.circe"      %%% "circe-generic"       % "0.14.5",
+      "io.circe"      %%% "circe-parser"        % "0.14.5",
       "org.typelevel" %%% "munit-cats-effect-2" % "1.0.7" % Test
     ),
     scalaJSUseMainModuleInitializer := true,
