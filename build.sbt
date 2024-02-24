@@ -56,7 +56,7 @@ lazy val server = (project in file("server"))
   .enablePlugins(GraalVMNativeImagePlugin)
   .settings(
     scalacOptions ++= compilerOptions,
-    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full),
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.3" cross CrossVersion.full),
     libraryDependencies ++= Seq(
       "org.http4s"    %% "http4s-blaze-server" % "0.22.2",
       "org.http4s"    %% "http4s-dsl"          % "0.22.2",
@@ -95,7 +95,7 @@ lazy val client = (project in file("client"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
     scalacOptions ++= compilerOptions.filterNot(_ == "-Ywarn-unused:params").filterNot(_ == "-Ywarn-unused:privates"),
-    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full),
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.3" cross CrossVersion.full),
     cleanFiles ++= Seq(
       (ThisBuild / baseDirectory).value / "static" / "js" / "client.js",
       (ThisBuild / baseDirectory).value / "static" / "js" / "client.js.map"
